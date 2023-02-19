@@ -1,0 +1,24 @@
+V 0.90.0  Initial program and upload
+
+V 0.90.1  Some minor GUI fixes
+
+V 0.91  Added Auto-Update functionality
+
+V 0.91.1 Fixed lookup without entering a callsign
+
+V 0.92  Added an Auto-Purge function to the Update function. This removes any VE who has lost 
+        their ARRL accreditation from the database. Also reworked the Lookup button. If one 
+        has registered their callsign, clicking on the button without entering a callsign 
+        will automatically lookup one's statistics. Also reworked the Summary report. For
+        1x2 or 2x1 callsigns, if there is a multiple match, one can add a '!' to the end
+        of their callsign which will restrict the matching process. It's not perfect. Dropped
+        the "Import by State" option which was for testing purposes.
+
+V 0.92.1 Added a check for a new VE during an update
+
+V 0.93 Added refresh of main GUI screen, fixed lookup for an exact match, fixed the detailed 
+        report, added the ability to generate a report based on a text file input
+
+V 0.93 Feb18   Discovered a shortcoming in the GUI and fixed it
+
+V 0.94 Added sort ability to detailed report page. The county sort is only for the state level of reports. Also added a button for the direction of sort.
