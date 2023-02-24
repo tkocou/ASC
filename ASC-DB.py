@@ -452,7 +452,6 @@ class App(tk.Tk):
         ## subtle reference to a JK flipflop circuit
         for j in range(0, list_length):
             for k in range(0, list_length-j-1):
-                #if (int(lt[k][4]) < int(lt[k + 1][4])):
                 if (lt[k][4] < lt[k + 1][4]):
                     temp_tuple = lt[k]
                     lt[k] = lt[k + 1]
