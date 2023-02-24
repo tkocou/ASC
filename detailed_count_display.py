@@ -160,7 +160,6 @@ def detailed_count_data(self):
         
         
         ## Make sure text window is blank
-        #self.result_text2.delete(1.0,tk.END)
         see_list = mb.askquestion('See details','The chosen list can be very long. Are you sure?')
         if see_list == 'no':
             self.topwin.destroy()
@@ -233,39 +232,21 @@ def massage_data(self,data,operation,count):
  
    
 def sort_list_of_tuples(self,lt):
-    #fd = open("sort_ops.txt",'w')
-    #tmp_txt = ""
     if self.total_sort: ## only do sort by county at the state level of report
         self.sort_key.set('4') ## For total listing reports, force a sort by count
     sort_data_key = int(self.sort_key.get())
     ## bubble sort a list of tuples
     list_length = len(lt)
-    #tmp_txt = 'Length of list: '+str(list_length)+'\n'
-    #fd.write(tmp_txt)
     ## subtle reference to a JK flipflop circuit
     for j in range(0, list_length):
-        #tmp_txt = 'Operator "J" value: '+str(j)+'\n'
-        #fd.write(tmp_txt)
         for k in range(0, list_length-j-1):
-            #tmp_txt = 'Operator "K" value: '+str(k)+'\n'
-            #fd.write(tmp_txt)
             if sort_data_key == 4: ## do numerical sort
                 if self.sort_dir:
                     ## for from high to low
-                    #tmp_txt = "Boolean test (int(lt[k][sort_data_key]) < int(lt[k + 1][sort_data_key]))"+str((int(lt[k][sort_data_key]) < int(lt[k + 1][sort_data_key])))+'\n'
-                    #fd.write(tmp_txt)
                     if (int(lt[k][sort_data_key]) < int(lt[k + 1][sort_data_key])):
-                        #tmp_txt = "tuple 'k': "+str(lt[k])+'\n'
-                        #fd.write(tmp_txt)
-                        #tmp_txt = "tuple 'k+1': "+str(lt[k + 1])+'\n'
-                        #fd.write(tmp_txt)
                         temp_tuple = lt[k]
                         lt[k] = lt[k + 1]
                         lt[k + 1] = temp_tuple
-                        #tmp_txt = "swapped tuple 'k': "+str(lt[k])+'\n'
-                        #fd.write(tmp_txt)
-                        #tmp_txt = "swapped tuple 'k+1': "+str(lt[k + 1])+'\n'
-                        #fd.write(tmp_txt)
                 else:
                     ## sort from low to high
                     if (int(lt[k][sort_data_key]) > int(lt[k + 1][sort_data_key])):
@@ -286,7 +267,7 @@ def sort_list_of_tuples(self,lt):
                         temp_tuple = lt[k]
                         lt[k] = lt[k + 1]
                         lt[k + 1] = temp_tuple
-    #fd.close()
+    
     return lt
     
         
