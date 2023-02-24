@@ -55,21 +55,10 @@ def session_count_data(self):
     self.ve_state_lower = ""
     self.ve_state_zero = ""
     
-    sql_by_state = "SELECT COUNT(*) FROM ve_count WHERE state LIKE ?"
-    sql_by_total = "SELECT COUNT(*) FROM ve_count"
-    sql_by_total_higher_count = "SELECT COUNT(*) FROM ve_count WHERE scount > ?"
-    sql_by_total_lower_count = "SELECT COUNT(*) FROM ve_count WHERE scount < ?"
-    sql_by_total_equal_count = "SELECT COUNT(*) FROM ve_count WHERE scount = ?"
-    sql_by_state_higher_count = "SELECT COUNT(*) FROM ve_count WHERE scount > ? AND state LIKE ?"
-    sql_by_state_lower_count = "SELECT COUNT(*) FROM ve_count WHERE scount < ? AND state LIKE ?"
-    sql_by_state_equal_count = "SELECT COUNT(*) FROM ve_count WHERE scount = ? AND state LIKE ?"
-    sql_by_call = "SELECT * FROM ve_count WHERE call LIKE ?"
-    sql_by_call_cnt = "SELECT COUNT(*) FROM ve_count WHERE call LIKE ?"
-    sql_by_defaults = "SELECT * FROM settings"
-    
     ## open database and fetch info
     db_connection = sqlite3.connect(gv.asc_database)
     db_cursor = db_connection.cursor()
+    sql_by_defaults = "SELECT * FROM settings"
     db_cursor.execute(sql_by_defaults)
     self.settings_setting = db_cursor.fetchone()
     
@@ -77,133 +66,164 @@ def session_count_data(self):
     self.my_state = self.settings_setting[3] ## set up state
     self.db_date = self.settings_setting[2] ## set up date
     
-    db_cursor.execute(sql_by_total) ## get count of all registered VEs
-    result = db_cursor.fetchall()
-    self.ve_total_people = result[0][0]
-    
-    tmp_result = []
-    tmp_result.append('%'+self.my_state+'%')
-    db_cursor.execute(sql_by_state,tuple(tmp_result)) ## get count of all VEs in your state
-    result = db_cursor.fetchall()
-    self.ve_state_people = result[0][0]
-    
-    tmp_result = []
-    tmp_result.append('%'+self.my_callsign+'%')
-    db_cursor.execute(sql_by_call_cnt,tuple(tmp_result)) ## Check if your callsign has multiple matches
-    result = db_cursor.fetchall() ## to be used later
-    match_count = result[0][0]
-    
-    if match_count == 1:
+    if self.my_callsign == "NOCALL":
+        mb.showerror("Error","Callsign has not been set.")
+        self.topwin.destroy()
+    else:
+        sql_by_total = "SELECT COUNT(*) FROM ve_count"
+        db_cursor.execute(sql_by_total) ## get count of all registered VEs
+        result = db_cursor.fetchall()
+        self.ve_total_people = result[0][0]
+        
         tmp_result = []
+        sql_by_state = "SELECT COUNT(*) FROM ve_count WHERE state LIKE ?"
+        tmp_result.append('%'+self.my_state+'%')
+        db_cursor.execute(sql_by_state,tuple(tmp_result)) ## get count of all VEs in your state
+        result = db_cursor.fetchall()
+        self.ve_state_people = result[0][0]
+        
+        tmp_result = []
+        sql_by_call_cnt = "SELECT COUNT(*) FROM ve_count WHERE call LIKE ?"
         tmp_result.append('%'+self.my_callsign+'%')
+        db_cursor.execute(sql_by_call_cnt,tuple(tmp_result)) ## Check if your callsign has multiple matches
+        result = db_cursor.fetchall() ## to be used later
+        match_count = result[0][0]
+        
+        sql_by_call = "SELECT * FROM ve_count WHERE call LIKE ?"
         db_cursor.execute(sql_by_call,tuple(tmp_result))
-        self.my_record = db_cursor.fetchone()
+        call_list = db_cursor.fetchall()
+        
+        if match_count > 1:
+            sql_match = 'SELECT * FROM ve_count WHERE id = ?'
+            tmp_list = []
+            self.exact_matched = False
+            for record in call_list:
+                exact_match = record[1].split(' ')
+                if exact_match[0] == self.my_callsign.upper():
+                    self.exact_matched = True
+                    tmp_list.append(record[0])
+                    db_cursor.execute(sql_match,tuple(tmp_list))
+                    call_list = db_cursor.fetchall()
+                    break
+            self.my_record = list(call_list[0]).copy()
+        else:
+            tmp_result = []
+            tmp_result.append('%'+self.my_callsign+'%')
+            db_cursor.execute(sql_by_call,tuple(tmp_result))
+            self.my_record = db_cursor.fetchone()
+            
         self.my_count = self.my_record[4]  ## scount?
-               
-        tmp_result = []
-        tmp_result.append('1')
-        db_cursor.execute(sql_by_total_lower_count,tuple(tmp_result))
+        
+        ## Get zero counts total
+        sql_by_total_lower_count = "SELECT COUNT(*) FROM ve_count WHERE scount < ?"     
+        tmp_result_tmp = []
+        tmp_result_tmp.append(1)
+        db_cursor.execute(sql_by_total_lower_count,tuple(tmp_result_tmp))
         result = db_cursor.fetchall()
         self.ve_total_zero = result[0][0]
-        tmp_result.append('%'+self.my_state+'%')
-        db_cursor.execute(sql_by_state_lower_count,tuple(tmp_result))
+        
+        ## get zero counts in state
+        sql_by_state_lower_count = "SELECT COUNT(*) FROM ve_count WHERE scount < ? AND state LIKE ?"
+        tmp_result_tmp.append('%'+self.my_state+'%')
+        db_cursor.execute(sql_by_state_lower_count,tuple(tmp_result_tmp))
         result = db_cursor.fetchall()
         self.ve_state_zero = result[0][0]
         
         tmp_result = []
+        sql_by_total_higher_count = "SELECT COUNT(*) FROM ve_count WHERE scount > ?"
         tmp_result.append(self.my_count)
         db_cursor.execute(sql_by_total_higher_count,tuple(tmp_result))
         result = db_cursor.fetchall()
         self.ve_total_higher = result[0][0]
         
+        sql_by_total_equal_count = "SELECT COUNT(*) FROM ve_count WHERE scount = ?"
         db_cursor.execute(sql_by_total_equal_count,tuple(tmp_result))
         result = db_cursor.fetchall()
         self.ve_total_equal = result[0][0]
         
-        
+        sql_by_total_lower_count = "SELECT COUNT(*) FROM ve_count WHERE scount < ?"
         db_cursor.execute(sql_by_total_lower_count,tuple(tmp_result))
         result = db_cursor.fetchall()
         self.ve_total_lower = result[0][0]
         
         ## Let's narrow the scope to the state level
-        
+        sql_by_state_higher_count = "SELECT COUNT(*) FROM ve_count WHERE scount > ? AND state LIKE ?"
         tmp_result.append('%'+self.my_state+'%')
         db_cursor.execute(sql_by_state_higher_count,tuple(tmp_result))
         result = db_cursor.fetchall()
         self.ve_state_higher = result[0][0]
         
+        sql_by_state_equal_count = "SELECT COUNT(*) FROM ve_count WHERE scount = ? AND state LIKE ?"
         db_cursor.execute(sql_by_state_equal_count,tuple(tmp_result))
         result = db_cursor.fetchall()
         self.ve_state_equal = result[0][0]
         
+        sql_by_state_lower_count = "SELECT COUNT(*) FROM ve_count WHERE scount < ? AND state LIKE ?"
         db_cursor.execute(sql_by_state_lower_count,tuple(tmp_result))
         result = db_cursor.fetchall()
         self.ve_state_lower = result[0][0]
         
-    else:
-        pass ## will have to do something else if there is more than one match
-    
-    db_connection.close()
-    
-    ## Let's set up the GUI and populate it
-    
-    self.list_label = tk.Label(self.topwin, text="Results")
-    self.list_label.grid(row=0, column=0, sticky='ne', padx=(10,600), pady=(10,10))
-    
-    self.cancel_button = tk.Button(self.topwin, text="Cancel Report", command = self.topwin.destroy)
-    self.cancel_button.grid(column=0, row=0, sticky='nw', padx=(20,5), pady=(5,5))
-    
-    self.result_text2 = tk.Text(self.topwin)
-    self.result_text2.grid(column=0, row=1, pady=4, padx=(20,30), sticky='nes')
-    self.result_text2.configure(background="#d8f8d8", wrap="word", height=34, width=160,fg="#000000")
-    self.result_text2.delete(1.0,tk.END)
-    self.text_scroll = ttk.Scrollbar(self.topwin, orient=tk.VERTICAL, command=self.result_text2.yview)
-    self.text_scroll.grid(column=0, row=1, sticky='nse', rowspan=20, pady=4, padx=(10,10))
-    self.result_text2['yscrollcommand'] = self.text_scroll.set
-    
-    ## Make sure text window is blank
-    self.result_text2.delete(1.0,tk.END)
-    #text_text = ""
-    
-    ## Report texts
-    text_text = "Statistics for ARRL accredited VEs as of {}.\n\n".format(self.db_date)
-    self.result_text2.insert(tk.END,text_text)
-    
-    text_text = "{} overall statistics:\n\n".format(self.my_callsign)
-    self.result_text2.insert(tk.END,text_text)
-    
-    text_text = "\tThere are {} accredited VEs.\n\n".format(self.ve_total_people)
-    self.result_text2.insert(tk.END,text_text)
-    
-    text_text = "\tThere are {} VEs with higher session counts.\n".format(self.ve_total_higher)
-    self.result_text2.insert(tk.END,text_text)
-    
-    text_text = "\tThere are {} VEs with equal session counts.\n".format(self.ve_total_equal)
-    self.result_text2.insert(tk.END,text_text)
-    
-    text_text = "\tThere are {} VEs with lower session counts.\n\n".format(self.ve_total_lower)
-    self.result_text2.insert(tk.END,text_text)
-    
-    text_text = "\tThere are {} VEs with a zero session count.\n\n".format(self.ve_total_zero)
-    self.result_text2.insert(tk.END,text_text)
-    
-    text_text = "{} state statistics:\n\n".format(self.my_callsign)
-    self.result_text2.insert(tk.END,text_text)
-    
-    text_text = "\tThere are {} accredited VEs in the state of {}.\n\n".format(self.ve_state_people,self.my_state)
-    self.result_text2.insert(tk.END,text_text)
-    
-    text_text = "\tThere are {} VEs with higher session counts.\n".format(self.ve_state_higher)
-    self.result_text2.insert(tk.END,text_text)
-    
-    text_text = "\tThere are {} VEs with equal session counts.\n".format(self.ve_state_equal)
-    self.result_text2.insert(tk.END,text_text)
-    
-    text_text = "\tThere are {} VEs with lower session counts.\n\n".format(self.ve_state_lower)
-    self.result_text2.insert(tk.END,text_text)
-    
-    text_text = "\tThere are {} VEs with a zero session count.\n\n".format(self.ve_state_zero)
-    self.result_text2.insert(tk.END,text_text)
-    
-    text_text = "End of report\n"
-    self.result_text2.insert(tk.END,text_text)
+        db_connection.close()
+        
+        ## Let's set up the GUI and populate it
+        
+        self.list_label = tk.Label(self.topwin, text="Results")
+        self.list_label.grid(row=0, column=0, sticky='ne', padx=(10,600), pady=(10,10))
+        
+        self.cancel_button = tk.Button(self.topwin, text="Cancel Report", command = self.topwin.destroy)
+        self.cancel_button.grid(column=0, row=0, sticky='nw', padx=(20,5), pady=(5,5))
+        
+        self.result_text2 = tk.Text(self.topwin)
+        self.result_text2.grid(column=0, row=1, pady=4, padx=(20,30), sticky='nes')
+        self.result_text2.configure(background="#d8f8d8", wrap="word", height=34, width=160,fg="#000000")
+        self.result_text2.delete(1.0,tk.END)
+        self.text_scroll = ttk.Scrollbar(self.topwin, orient=tk.VERTICAL, command=self.result_text2.yview)
+        self.text_scroll.grid(column=0, row=1, sticky='nse', rowspan=20, pady=4, padx=(10,10))
+        self.result_text2['yscrollcommand'] = self.text_scroll.set
+        
+        ## Make sure text window is blank
+        self.result_text2.delete(1.0,tk.END)
+        #text_text = ""
+        
+        ## Report texts
+        text_text = "Statistics for ARRL accredited VEs as of {}.\n\n".format(self.db_date)
+        self.result_text2.insert(tk.END,text_text)
+        
+        text_text = "{} overall statistics:\n\n".format(self.my_callsign)
+        self.result_text2.insert(tk.END,text_text)
+        
+        text_text = "\tThere are {} accredited VEs.\n\n".format(self.ve_total_people)
+        self.result_text2.insert(tk.END,text_text)
+        
+        text_text = "\tThere are {} VEs with higher session counts.\n".format(self.ve_total_higher)
+        self.result_text2.insert(tk.END,text_text)
+        
+        text_text = "\tThere are {} VEs with equal session counts.\n".format(self.ve_total_equal)
+        self.result_text2.insert(tk.END,text_text)
+        
+        text_text = "\tThere are {} VEs with lower session counts.\n\n".format(self.ve_total_lower)
+        self.result_text2.insert(tk.END,text_text)
+        
+        text_text = "\tThere are {} VEs with a zero session count.\n\n".format(self.ve_total_zero)
+        self.result_text2.insert(tk.END,text_text)
+        
+        text_text = "{} state statistics:\n\n".format(self.my_callsign)
+        self.result_text2.insert(tk.END,text_text)
+        
+        text_text = "\tThere are {} accredited VEs in the state of {}.\n\n".format(self.ve_state_people,self.my_state)
+        self.result_text2.insert(tk.END,text_text)
+        
+        text_text = "\tThere are {} VEs with higher session counts.\n".format(self.ve_state_higher)
+        self.result_text2.insert(tk.END,text_text)
+        
+        text_text = "\tThere are {} VEs with equal session counts.\n".format(self.ve_state_equal)
+        self.result_text2.insert(tk.END,text_text)
+        
+        text_text = "\tThere are {} VEs with lower session counts.\n\n".format(self.ve_state_lower)
+        self.result_text2.insert(tk.END,text_text)
+        
+        text_text = "\tThere are {} VEs with a zero session count.\n\n".format(self.ve_state_zero)
+        self.result_text2.insert(tk.END,text_text)
+        
+        text_text = "End of report\n"
+        self.result_text2.insert(tk.END,text_text)

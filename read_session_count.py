@@ -36,7 +36,6 @@ def get_count(self,state):
     for record in result:
         ve_record = []
         call_check = []
-        
         ## we now have a list 'record' with [call,county,accreditation date,count]
         ## check if callsign exist in current table
         ## Parse the record to just the callsign
@@ -49,12 +48,14 @@ def get_count(self,state):
         db_cursor.execute("SELECT COUNT(*) FROM ve_count")
         len_rc = db_cursor.fetchall()
         len_record_check = int(len_rc[0][0])
-        
         ## 'record_check' is a list type set to 'None' if no record was fetched
         ## transfer over the record from the ARRL <- always contains VE data
         index = 0
         for item in gv.ve_input_list:
-            ve_record.append(record[index])
+            if index == 3:
+                ve_record.append(int(record[index]))
+            else:
+                ve_record.append(record[index])
             index += 1
         ## append the state
         ve_record.append(state)
@@ -67,7 +68,7 @@ def get_count(self,state):
         ## if a blank was returned, do an insert
         ## During an initial build of the database, "record_check" will always be set to None
         ## "len_record_check" will be zero for an empty database
-        if record_check == None or len_record_check < 1: 
+        if record_check == None or len_record_check < 1 or record_check == []: 
             index = 0
             ## Check each element in the list for missing data
             for element in ve_record:
@@ -87,7 +88,7 @@ def get_count(self,state):
         else: ## record exists, do an update
             update_flag = True
             tag_update = '1'
-            values = tuple([record[3],tag_update,call_check[0]]) ## set
+            values = tuple([int(record[3]),tag_update,call_check[0]]) ## set
             sql = "UPDATE ve_count SET scount = ?, tag = ? WHERE call = ?"
             db_cursor.execute(sql,values)
             db_connection.commit()

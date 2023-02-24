@@ -23,3 +23,6 @@ V 0.93 Feb18   Discovered a shortcoming in the GUI and fixed it
 
 V 0.94 Added sort ability to detailed report page. The county sort is only for the state level of reports.
         Also added a button for the direction of sort.
+
+V 0.95 Found session count data was being stored incorrectly. Fixed the problem. Previous databases
+        will need to be rebuilt (i.e. deleted and re-imported)

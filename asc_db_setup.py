@@ -51,7 +51,7 @@ def setup():
             ## will be populated by data from website
             sql = """
                     CREATE TABLE IF NOT EXISTS ve_count (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    call TEXT NOT NULL UNIQUE, county TEXT NOT NULL, accredit TEXT NOT NULL, scount TEXT NOT NULL, state TEXT NOT NULL, tag TEXT);
+                    call TEXT NOT NULL UNIQUE, county TEXT NOT NULL, accredit TEXT NOT NULL, scount INTEGER NOT NULL, state TEXT NOT NULL, tag TEXT);
                 """
             sql_result = db_cursor.execute(sql)
             

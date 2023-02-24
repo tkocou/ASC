@@ -20,6 +20,9 @@ def read_text_file(self):
             cs_read = fh.read()
         cs_list = cs_read.split('\n')
         callsigns.extend(cs_list)
+    if len(callsigns) == 0:
+        mb.showwarning("Empty REPORTS Directory!","No callsign text files found in REPORTS directory.")
+    callsign_list = []
     for call in callsigns:
         tmp_list = []
         sql_text = "SELECT * FROM ve_count WHERE call LIKE ?"
@@ -57,16 +60,17 @@ def read_text_file(self):
                     except:
                         record_check = None
                     break
-        
+        callsign_list.extend(record_check)
         db_connection.close()
         
-        if len(call) > 0:
-            if record_check == None or self.exact_matched == False or record_check == []:
-                text = "\nCallsign {} was not found!\n".format(self.lookup_callsign.upper())+'\n'
-                self.result_text.insert(tk.END,text)
-            else:    
-                for r in record_check:
-                    text_line = "Count:{}, Call:{}, County:{}, State:{}, Accredited:{}\n".format(r[4],r[1],r[2],r[5],r[3])
-                    self.result_text.insert(tk.END,text_line)
+    if record_check == None or self.exact_matched == False or record_check == []:
+        text = "\nCallsign {} was not found!\n".format(self.lookup_callsign.upper())+'\n'
+        self.result_text.insert(tk.END,text)
+    else:
+        call_sorted_listing = self.sort_list_of_tuples(callsign_list)
+        for r in call_sorted_listing:
+            text_line = "Count:{}, Call:{}, County:{}, State:{}, Accredited:{}\n".format(r[4],r[1],r[2],r[5],r[3])
+            self.result_text.insert(tk.END,text_line)
+            
     self.update_idletasks()
     

@@ -71,94 +71,99 @@ def detailed_count_data(self):
     self.db_date = self.settings_setting[2] ## set up date
     
     tmp_result = []
-    tmp_result.append('%'+self.my_callsign+'%')
-    db_cursor.execute(sql_by_call_cnt,tuple(tmp_result)) ## Check if your callsign has multiple matches
-    result = db_cursor.fetchall() 
-    match_count = result[0][0]
-    
-    db_cursor.execute(sql_by_call,tuple(tmp_result))
-    call_list = db_cursor.fetchall()
-    
-    if match_count > 1:
-        sql_match = 'SELECT * FROM ve_count WHERE id = ?'
-        tmp_list = []
-        self.exact_matched = False
-        for record in call_list:
-            exact_match = record[1].split(' ')
-            if exact_match[0] == self.my_callsign.upper():
-                self.exact_matched = True
-                tmp_list.append(record[0])
-                db_cursor.execute(sql_match,tuple(tmp_list))
-                call_list = db_cursor.fetchall()
-                break
-    self.my_record = list(call_list[0]).copy()
-    self.my_count = self.my_record[4]  ## scount
-    
-    tmp_result = []
-    tmp_result.append(self.my_count)
-    db_cursor.execute(sql_detailed_by_total_higher_count,tuple(tmp_result))
-    self.ve_detailed_list_high = db_cursor.fetchall()
-    
-    
-    db_cursor.execute(sql_detailed_by_total_equal_count,tuple(tmp_result))
-    self.ve_detailed_list_equal = db_cursor.fetchall()
-    
-    
-    db_cursor.execute(sql_detailed_by_total_lower_count,tuple(tmp_result))
-    self.ve_detailed_list_low = db_cursor.fetchall()
-    
-    ## Let's narrow the scope to the state level
-    
-    tmp_result.append('%'+self.my_state+'%')
-    db_cursor.execute(sql_detailed_by_state_higher_count,tuple(tmp_result))
-    self.ve_detailed_list_high_state = db_cursor.fetchall()
-    
-    db_cursor.execute(sql_detailed_by_state_equal_count,tuple(tmp_result))
-    self.ve_detailed_list_equal_state = db_cursor.fetchall()
-    
-    db_cursor.execute(sql_detailed_by_state_lower_count,tuple(tmp_result))
-    self.ve_detailed_list_low_state = db_cursor.fetchall()
-    
-    
-    db_connection.close()
-    
-    ## Let's set up the GUI and populate it
-    
-    self.cancel_button = tk.Button(self.topwin, text="Cancel Report", command = self.topwin.destroy)
-    self.cancel_button.grid(column=1, row=0, sticky='nw', padx=(20,5), pady=(5,5))
-    
-    self.cancel_button = tk.Button(self.topwin, text="Display Report", command = lambda: display_list(self))
-    self.cancel_button.grid(column=0, row=0, sticky='nw', padx=(20,5), pady=(5,5))
-    
-    self.result_text2 = tk.Text(self.topwin)
-    self.result_text2.grid(column=1, row=1, pady=4, padx=(20,30), sticky='nes', rowspan=4)
-    self.result_text2.configure(background="#d8f8d8", wrap="word", height=34, width=100,fg="#000000")
-    self.result_text2.delete(1.0,tk.END)
-    self.text_scroll = ttk.Scrollbar(self.topwin, orient=tk.VERTICAL, command=self.result_text2.yview)
-    self.text_scroll.grid(column=1, row=1, sticky='nse', rowspan=20, pady=(5,5), padx=(10,10))
-    self.result_text2['yscrollcommand'] = self.text_scroll.set
-    
-    self.select_detail = ttk.Combobox(self.topwin, width=13, textvariable=self.selected_detail_list)
-    self.select_detail.grid(column=0, row=1, sticky='nw', padx=(5,5), pady=(5,5))
-    self.select_detail['values'] = tuple(gv.select_report_list)
-    self.select_detail['state'] = 'readonly'
-    self.select_detail.set(gv.select_report_list_default)
-    
-    
-    ## set up radio buttons for sort
-    for fld in gv.rb_cols:
-        self.rb = ttk.Radiobutton(self.topwin, text=fld[0], value=fld[1], variable=self.sort_key)
-        self.rb.grid(row=3, column=0, sticky='nwe', padx=fld[2])
-        
-    self.dir_sort_button = tk.Button(self.topwin, text = 'Sort Direction Toggle', bg="#d0ffd0", command = self.toggle_dir)
-    self.dir_sort_button.grid(row=2, column=0, sticky='sw',padx=(0,8), pady=0 )
-    
-    
-    ## Make sure text window is blank
-    #self.result_text2.delete(1.0,tk.END)
-    see_list = mb.askquestion('See details','The chosen list can be very long. Are you sure?')
-    if see_list == 'no':
+    if self.my_callsign == "NOCALL":
+        mb.showerror("Error","Callsign has not been set.")
         self.topwin.destroy()
+    else:
+        tmp_result.append('%'+self.my_callsign+'%')
+        db_cursor.execute(sql_by_call_cnt,tuple(tmp_result)) ## Check if your callsign has multiple matches
+        result = db_cursor.fetchall() 
+        match_count = result[0][0]
+    
+        db_cursor.execute(sql_by_call,tuple(tmp_result))
+        call_list = db_cursor.fetchall()
+        
+        if match_count > 1:
+            sql_match = 'SELECT * FROM ve_count WHERE id = ?'
+            tmp_list = []
+            self.exact_matched = False
+            for record in call_list:
+                exact_match = record[1].split(' ')
+                if exact_match[0] == self.my_callsign.upper():
+                    self.exact_matched = True
+                    tmp_list.append(record[0])
+                    db_cursor.execute(sql_match,tuple(tmp_list))
+                    call_list = db_cursor.fetchall()
+                    break
+        self.my_record = list(call_list[0]).copy()
+        self.my_count = self.my_record[4]  ## scount
+        
+        
+        tmp_result = []
+        tmp_result.append(self.my_count)
+        db_cursor.execute(sql_detailed_by_total_higher_count,tuple(tmp_result))
+        self.ve_detailed_list_high = db_cursor.fetchall()
+        
+        
+        db_cursor.execute(sql_detailed_by_total_equal_count,tuple(tmp_result))
+        self.ve_detailed_list_equal = db_cursor.fetchall()
+        
+        
+        db_cursor.execute(sql_detailed_by_total_lower_count,tuple(tmp_result))
+        self.ve_detailed_list_low = db_cursor.fetchall()
+        
+        ## Let's narrow the scope to the state level
+        
+        tmp_result.append('%'+self.my_state+'%')
+        db_cursor.execute(sql_detailed_by_state_higher_count,tuple(tmp_result))
+        self.ve_detailed_list_high_state = db_cursor.fetchall()
+        
+        db_cursor.execute(sql_detailed_by_state_equal_count,tuple(tmp_result))
+        self.ve_detailed_list_equal_state = db_cursor.fetchall()
+        
+        db_cursor.execute(sql_detailed_by_state_lower_count,tuple(tmp_result))
+        self.ve_detailed_list_low_state = db_cursor.fetchall()
+        
+        
+        db_connection.close()
+        
+        ## Let's set up the GUI and populate it
+        
+        self.cancel_button = tk.Button(self.topwin, text="Cancel Report", command = self.topwin.destroy)
+        self.cancel_button.grid(column=1, row=0, sticky='nw', padx=(20,5), pady=(5,5))
+        
+        self.cancel_button = tk.Button(self.topwin, text="Display Report", command = lambda: display_list(self))
+        self.cancel_button.grid(column=0, row=0, sticky='nw', padx=(20,5), pady=(5,5))
+        
+        self.result_text2 = tk.Text(self.topwin)
+        self.result_text2.grid(column=1, row=1, pady=4, padx=(20,30), sticky='nes', rowspan=4)
+        self.result_text2.configure(background="#d8f8d8", wrap="word", height=34, width=100,fg="#000000")
+        self.result_text2.delete(1.0,tk.END)
+        self.text_scroll = ttk.Scrollbar(self.topwin, orient=tk.VERTICAL, command=self.result_text2.yview)
+        self.text_scroll.grid(column=1, row=1, sticky='nse', rowspan=20, pady=(5,5), padx=(10,10))
+        self.result_text2['yscrollcommand'] = self.text_scroll.set
+        
+        self.select_detail = ttk.Combobox(self.topwin, width=13, textvariable=self.selected_detail_list)
+        self.select_detail.grid(column=0, row=1, sticky='nw', padx=(5,5), pady=(5,5))
+        self.select_detail['values'] = tuple(gv.select_report_list)
+        self.select_detail['state'] = 'readonly'
+        self.select_detail.set(gv.select_report_list_default)
+        
+        
+        ## set up radio buttons for sort
+        for fld in gv.rb_cols:
+            self.rb = ttk.Radiobutton(self.topwin, text=fld[0], value=fld[1], variable=self.sort_key)
+            self.rb.grid(row=3, column=0, sticky='nwe', padx=fld[2])
+            
+        self.dir_sort_button = tk.Button(self.topwin, text = 'Sort Direction Toggle', bg="#d0ffd0", command = self.toggle_dir)
+        self.dir_sort_button.grid(row=2, column=0, sticky='sw',padx=(0,8), pady=0 )
+        
+        
+        ## Make sure text window is blank
+        #self.result_text2.delete(1.0,tk.END)
+        see_list = mb.askquestion('See details','The chosen list can be very long. Are you sure?')
+        if see_list == 'no':
+            self.topwin.destroy()
     
     
 def display_list(self):    
@@ -228,21 +233,39 @@ def massage_data(self,data,operation,count):
  
    
 def sort_list_of_tuples(self,lt):
+    #fd = open("sort_ops.txt",'w')
+    #tmp_txt = ""
     if self.total_sort: ## only do sort by county at the state level of report
         self.sort_key.set('4') ## For total listing reports, force a sort by count
     sort_data_key = int(self.sort_key.get())
     ## bubble sort a list of tuples
     list_length = len(lt)
+    #tmp_txt = 'Length of list: '+str(list_length)+'\n'
+    #fd.write(tmp_txt)
     ## subtle reference to a JK flipflop circuit
     for j in range(0, list_length):
+        #tmp_txt = 'Operator "J" value: '+str(j)+'\n'
+        #fd.write(tmp_txt)
         for k in range(0, list_length-j-1):
+            #tmp_txt = 'Operator "K" value: '+str(k)+'\n'
+            #fd.write(tmp_txt)
             if sort_data_key == 4: ## do numerical sort
                 if self.sort_dir:
                     ## for from high to low
+                    #tmp_txt = "Boolean test (int(lt[k][sort_data_key]) < int(lt[k + 1][sort_data_key]))"+str((int(lt[k][sort_data_key]) < int(lt[k + 1][sort_data_key])))+'\n'
+                    #fd.write(tmp_txt)
                     if (int(lt[k][sort_data_key]) < int(lt[k + 1][sort_data_key])):
+                        #tmp_txt = "tuple 'k': "+str(lt[k])+'\n'
+                        #fd.write(tmp_txt)
+                        #tmp_txt = "tuple 'k+1': "+str(lt[k + 1])+'\n'
+                        #fd.write(tmp_txt)
                         temp_tuple = lt[k]
                         lt[k] = lt[k + 1]
                         lt[k + 1] = temp_tuple
+                        #tmp_txt = "swapped tuple 'k': "+str(lt[k])+'\n'
+                        #fd.write(tmp_txt)
+                        #tmp_txt = "swapped tuple 'k+1': "+str(lt[k + 1])+'\n'
+                        #fd.write(tmp_txt)
                 else:
                     ## sort from low to high
                     if (int(lt[k][sort_data_key]) > int(lt[k + 1][sort_data_key])):
@@ -263,6 +286,7 @@ def sort_list_of_tuples(self,lt):
                         temp_tuple = lt[k]
                         lt[k] = lt[k + 1]
                         lt[k + 1] = temp_tuple
+    #fd.close()
     return lt
     
         

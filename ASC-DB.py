@@ -94,13 +94,12 @@ class App(tk.Tk):
         ## save SQL results
         self.text_text = ""
         self.text_list = []
-        #self.csv_dict_list = []
         self.shebang = False
         self.lookup_callsign = ""
         self.exact_matched = False
         self.sort_key = tk.StringVar()
         self.sort_key.set(gv.def_sort_key)
-        self.sort_dir = True
+        self.sort_dir = False
         self.total_sort = False
         
         self.as_of_var = tk.StringVar()
@@ -134,7 +133,6 @@ class App(tk.Tk):
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
         self.columnconfigure(2, weight=1)
-        #self.columnconfigure(3, weight=1)
 
         self.rowconfigure(0,weight=1)
         self.rowconfigure(1,weight=1)
@@ -245,12 +243,10 @@ class App(tk.Tk):
         
         
     def refresh_database(self):
-        #print("self.running: ",self.running)
         db_connection = sqlite3.connect(gv.asc_database)
         db_cursor = db_connection.cursor()
         db_cursor.execute("SELECT * FROM settings")
         self.settings_check = db_cursor.fetchone()
-        #print("setting: ",self.settings_check)
         if len(gv.settings) == 0:
             self.ur_call_var.set(self.settings_check[1])
             self.as_of_var.set(self.settings_check[2])
@@ -272,7 +268,6 @@ class App(tk.Tk):
         ## Do not invoke the auto-update until parameters are set
         elif self.settings_check[4] == '1' and self.running : 
             if self.update_db_obj == None: ## thread obj has not been initialized
-                #print("creating obj.")
                 self.update_db_obj = Update(self, self.run_auto_update,self.result_text,gv.cron_string) ## Pass the parameters
                 self.update_db_obj.start()
                 self.update_idletasks()
@@ -376,8 +371,6 @@ class App(tk.Tk):
             ls = self.lookup_callsign[:-1]
             self.lookup_callsign = ls
         lup_callsign = '%'+self.lookup_callsign.upper()+'%'
-        if self.shebang:
-            self.result_text.delete(1.0,tk.END)
         db_connection = sqlite3.connect(gv.asc_database)
         db_cursor = db_connection.cursor()
         
@@ -387,7 +380,6 @@ class App(tk.Tk):
             record_check = db_cursor.fetchall()
         except:
             record_check = None
-        
             
         sql_match = 'SELECT * FROM ve_count WHERE id = ?'
         tmp_list = []
@@ -407,6 +399,7 @@ class App(tk.Tk):
         
         db_connection.close()
         
+        self.result_text.delete(1.0,tk.END)
         if record_check != None:
             if len(record_check) == 1 or self.exact_matched:
                 record = record_check[0]
@@ -421,7 +414,6 @@ class App(tk.Tk):
                 self.their_state_var.set('')
                 self.their_session_count_var.set('')
                 self.their_accreditation.set('')
-                self.result_text.delete(1.0,tk.END)
                 ## bubble sort on session count
                 record_check = self.sort_list_of_tuples(record_check)
                 for r in record_check:
@@ -460,7 +452,8 @@ class App(tk.Tk):
         ## subtle reference to a JK flipflop circuit
         for j in range(0, list_length):
             for k in range(0, list_length-j-1):
-                if (int(lt[k][4]) < int(lt[k + 1][4])):
+                #if (int(lt[k][4]) < int(lt[k + 1][4])):
+                if (lt[k][4] < lt[k + 1][4]):
                     temp_tuple = lt[k]
                     lt[k] = lt[k + 1]
                     lt[k + 1] = temp_tuple

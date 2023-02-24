@@ -2,7 +2,7 @@
 
 ## program vars
 program = "ARRL Session Count for VEs"
-version = "0.94"
+version = "0.95"
 
 top_window_x = 1280
 top_window_y = 700
@@ -56,3 +56,6 @@ cron_string = "0 3 * * *"
 ## radio button parameters based on sort of report
 rb_cols = [('session','4',0),('county','2',80)] 
 def_sort_key = '4'
+
+timing_start = 0
+timing_end = 0
