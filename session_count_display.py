@@ -183,7 +183,6 @@ def session_count_data(self):
         
         ## Make sure text window is blank
         self.result_text2.delete(1.0,tk.END)
-        #text_text = ""
         
         ## Report texts
         text_text = "Statistics for ARRL accredited VEs as of {}.\n\n".format(self.db_date)
