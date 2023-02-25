@@ -26,3 +26,6 @@ V 0.94 Added sort ability to detailed report page. The county sort is only for t
 
 V 0.95 Found session count data was being stored incorrectly. Fixed the problem. Previous databases
         will need to be rebuilt (i.e. deleted and re-imported)
+
+V 0.96 Fixed read_text.py to ignore invalid callsigns listed in the text file. Fixed detailed_count_display.py
+        for a quicker sort of total options. Fixed sorting in asc-db.py

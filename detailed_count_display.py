@@ -182,23 +182,14 @@ def display_list(self):
         self.total_sort = False
         sorted_list = massage_data(self,self.ve_detailed_list_low_state,operation,self.my_count)
     elif list_selection == 'Total Higher':
-        line = 'Building listing, please wait...'
-        self.result_text2.insert(tk.END,line+'\n')
-        self.update_idletasks()
         operation = '>'
         self.total_sort = True
         sorted_list = massage_data(self,self.ve_detailed_list_high,operation,self.my_count)
     elif list_selection == 'Total Equal':
-        line = 'Building listing, please wait...'
-        self.result_text2.insert(tk.END,line+'\n')
-        self.update_idletasks()
         operation = '='
         self.total_sort = True
         sorted_list = massage_data(self,self.ve_detailed_list_equal,operation,self.my_count)
     elif list_selection == 'Total Lower':
-        line = 'Building listing, please wait...'
-        self.result_text2.insert(tk.END,line+'\n')
-        self.update_idletasks()
         operation = '<'
         self.total_sort = True
         sorted_list = massage_data(self,self.ve_detailed_list_low,operation,self.my_count)
@@ -235,39 +226,7 @@ def sort_list_of_tuples(self,lt):
     if self.total_sort: ## only do sort by county at the state level of report
         self.sort_key.set('4') ## For total listing reports, force a sort by count
     sort_data_key = int(self.sort_key.get())
-    ## bubble sort a list of tuples
-    list_length = len(lt)
-    ## subtle reference to a JK flipflop circuit
-    for j in range(0, list_length):
-        for k in range(0, list_length-j-1):
-            if sort_data_key == 4: ## do numerical sort
-                if self.sort_dir:
-                    ## for from high to low
-                    if (int(lt[k][sort_data_key]) < int(lt[k + 1][sort_data_key])):
-                        temp_tuple = lt[k]
-                        lt[k] = lt[k + 1]
-                        lt[k + 1] = temp_tuple
-                else:
-                    ## sort from low to high
-                    if (int(lt[k][sort_data_key]) > int(lt[k + 1][sort_data_key])):
-                        temp_tuple = lt[k]
-                        lt[k] = lt[k + 1]
-                        lt[k + 1] = temp_tuple
-                
-            else: ## do alphabetical sort
-                if self.sort_dir:
-                    ## for from high to low
-                    if (lt[k][sort_data_key] < lt[k + 1][sort_data_key]):
-                        temp_tuple = lt[k]
-                        lt[k] = lt[k + 1]
-                        lt[k + 1] = temp_tuple
-                else:
-                    ## sort from low to high
-                    if (lt[k][sort_data_key] > lt[k + 1][sort_data_key]):
-                        temp_tuple = lt[k]
-                        lt[k] = lt[k + 1]
-                        lt[k + 1] = temp_tuple
-    
+    lt.sort(key=lambda tup_var: tup_var[sort_data_key], reverse = self.sort_dir)
     return lt
     
         

@@ -11,6 +11,7 @@ import global_var as gv
 def read_text_file(self):
     callsigns = []
     cs_read = ""
+    record_check = []
     self.result_text.delete(1.0,tk.END)
     file_list = os.listdir(gv.base_rpt_dir)
     for file_line in file_list:
@@ -24,6 +25,9 @@ def read_text_file(self):
         mb.showwarning("Empty REPORTS Directory!","No callsign text files found in REPORTS directory.")
     callsign_list = []
     for call in callsigns:
+        ##
+        ## empty callsigns and callsigns not in the database are ignored
+        ##
         tmp_list = []
         sql_text = "SELECT * FROM ve_count WHERE call LIKE ?"
         self.lookup_callsign = call
@@ -41,8 +45,8 @@ def read_text_file(self):
                 self.exact_matched = True
             else:
                 record_check = []
-        except:
-            record_check = None
+        except: ## database problem
+            record_check = []
         
         if len(record_check) > 1:  ## multiple match
             self.exact_matched = False  
@@ -57,18 +61,19 @@ def read_text_file(self):
                     try:
                         db_cursor.execute(sql_match,tuple(tmp_list))
                         record_check = db_cursor.fetchall()
-                    except:
-                        record_check = None
+                        ## add exactly matched callsign
+                        callsign_list.extend(record_check)
+                    except: ## database problem
+                        record_check = []
                     break
-        callsign_list.extend(record_check)
+        else: ## add single matched callsign
+            callsign_list.extend(record_check)
         db_connection.close()
-        
-    if record_check == None or self.exact_matched == False or record_check == []:
-        text = "\nCallsign {} was not found!\n".format(self.lookup_callsign.upper())+'\n'
-        self.result_text.insert(tk.END,text)
-    else:
-        call_sorted_listing = self.sort_list_of_tuples(callsign_list)
-        for r in call_sorted_listing:
+    
+    ## Only do a report if we have valid data
+    if len(callsign_list) > 0:
+        callsign_list.sort(key=lambda tup_var: tup_var[4], reverse = True)
+        for r in callsign_list:
             text_line = "Count:{}, Call:{}, County:{}, State:{}, Accredited:{}\n".format(r[4],r[1],r[2],r[5],r[3])
             self.result_text.insert(tk.END,text_line)
             

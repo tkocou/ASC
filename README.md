@@ -6,7 +6,7 @@ For Windows systems, this program is dependent on Python (version 3.8 or higher)
 
 To find Python for your Windows system, open a browser and search using _**python for windows**_
 
-## Current release version is 0.95
+## Current release version is 0.96
 
 Read the ChangeLog for details.
 

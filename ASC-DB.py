@@ -99,7 +99,7 @@ class App(tk.Tk):
         self.exact_matched = False
         self.sort_key = tk.StringVar()
         self.sort_key.set(gv.def_sort_key)
-        self.sort_dir = False
+        self.sort_dir = True
         self.total_sort = False
         
         self.as_of_var = tk.StringVar()
@@ -414,8 +414,8 @@ class App(tk.Tk):
                 self.their_state_var.set('')
                 self.their_session_count_var.set('')
                 self.their_accreditation.set('')
-                ## bubble sort on session count
-                record_check = self.sort_list_of_tuples(record_check)
+                ## sort on session count, descending order
+                record_check.sort(key=lambda tup_var: tup_var[4], reverse = True)
                 for r in record_check:
                     text_line = "Count:{}, Call:{}, County:{}, State:{}, Accredited:{}\n".format(r[4],r[1],r[2],r[5],r[3])
                     self.result_text.insert(tk.END,text_line)
@@ -446,19 +446,7 @@ class App(tk.Tk):
         
         db_connection.close()
     
-    def sort_list_of_tuples(self,lt):
-        ## bubble sort a list of tuples with highest count at the top
-        list_length = len(lt)
-        ## subtle reference to a JK flipflop circuit
-        for j in range(0, list_length):
-            for k in range(0, list_length-j-1):
-                if (lt[k][4] < lt[k + 1][4]):
-                    temp_tuple = lt[k]
-                    lt[k] = lt[k + 1]
-                    lt[k + 1] = temp_tuple
-        return lt
-    
-    def toggle_dir(self):
+    def toggle_dir(self): ## used in detailed_count_display()
         if self.sort_dir:
             self.sort_dir = False
         else:
