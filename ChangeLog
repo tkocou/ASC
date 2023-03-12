@@ -29,3 +29,5 @@ V 0.95 Found session count data was being stored incorrectly. Fixed the problem.
 
 V 0.96 Fixed read_text.py to ignore invalid callsigns listed in the text file. Fixed detailed_count_display.py
         for a quicker sort of total options. Fixed sorting in asc-db.py
+
+V 0.96.1 Windows problem with creating a desktop shortcut. Fixed ve_utilities.py

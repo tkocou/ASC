@@ -5,6 +5,7 @@ import base64
 import bz2
 import platform
 import shutil
+from tkinter import messagebox as mb
 
 import global_var as gv
 import icons_array as ia 
@@ -87,8 +88,12 @@ def make_launcher():
         link_file = file_dict['wdesk']
         launcher_file = os.path.join(asc_dir,link_file)
         launcher_dest = os.path.join(desktop_dir,link_file)
-        if not os.path.exists(launcher_dest):
-            shutil.copy2(launcher_file,launcher_dest)
+        try:
+            if not os.path.exists(launcher_dest):
+                shutil.copy2(launcher_file,launcher_dest)
+        except: ## some sort of permission issue can prevent the creation of the shortcut
+            mb.showinfo("Launcher creation problem","Was not able to create the shortcut.\nTry manually creating a shortcut in your desktop.")
+            pass
             
     elif sys_platform  == "Linux":
         ## let's create a desktop launcher
