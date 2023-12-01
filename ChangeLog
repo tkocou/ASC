@@ -1,0 +1,71 @@
+V 0.90.0  Initial program and upload
+
+V 0.90.1  Some minor GUI fixes
+
+V 0.91  Added Auto-Update functionality
+
+V 0.91.1 Fixed lookup without entering a callsign
+
+V 0.92  Added an Auto-Purge function to the Update function. This removes any VE who has lost 
+        their ARRL accreditation from the database. Also reworked the Lookup button. If one 
+        has registered their callsign, clicking on the button without entering a callsign 
+        will automatically lookup one's statistics. Also reworked the Summary report. For
+        1x2 or 2x1 callsigns, if there is a multiple match, one can add a '!' to the end
+        of their callsign which will restrict the matching process. It's not perfect. Dropped
+        the "Import by State" option which was for testing purposes.
+
+V 0.92.1 Added a check for a new VE during an update
+
+V 0.93 Added refresh of main GUI screen, fixed lookup for an exact match, fixed the detailed 
+        report, added the ability to generate a report based on a text file input
+
+V 0.93 Feb18   Discovered a shortcoming in the GUI and fixed it
+
+V 0.94 Added sort ability to detailed report page. The county sort is only for the state level of reports.
+        Also added a button for the direction of sort.
+
+V 0.95 Found session count data was being stored incorrectly. Fixed the problem. Previous databases
+        will need to be rebuilt (i.e. deleted and re-imported)
+
+V 0.96 Fixed read_text.py to ignore invalid callsigns listed in the text file. Fixed detailed_count_display.py
+        for a quicker sort of total options. Fixed sorting in asc-db.py
+
+V 0.96.1 Windows problem with creating a desktop shortcut. Fixed ve_utilities.py
+
+V 0.96.2 Removed warning from detailed report. Cleaned up read_session_count(). Fixed summary report.
+          Updated version number.
+
+V 0.97 Added support for GLAARG stats to the program
+
+V 0.97.1 Adjusted GLAARG import/update messages
+
+V 0.97.2 Added message in case GLAARG website is not available
+
+V 0.97.3 &  0.97.3.1 Fixed issues due to glaarg being added
+
+V 0.98 added sort function to 'Other Session Counts' menu, renamed same menu item, 
+        added text file capture to the same menu --> stored in Reports directory as
+        "another_session_count.txt"
+
+V 0.99 Added ability to do limited fetch by designated States for ARRL, example: fetch only CA & OR states
+        instead of all 50 states. Added ability to track when an ARRL fetch is interrupted and pick up at
+        the point of interruption afterward. Side Note: added new installation scripts for Linux and MacOS
+        systems.
+
+V 0.99.1 Fixed the read_text.py to ignore the new import-update-by-state.txt
+
+V 0.99.2 Fixed cron thread activation code. Problem induced by DB change in V 0.97. Side Note: adjusted install_ASC_Linux.sh
+        to account for an older installation of ASC.
+
+V 0.99.3 Removed the code for creating a launcher in the Windows Desktop
+
+V 1.0 Added the ability to reset the database in the case of corruption causing the import function to hang. 
+        After resetting the database, you will need to run Set Defaults as well as the Imports.
+
+V 1.0.1 Minor fix in database check
+
+V 1.1 Fixed the logic error in db setup
+
+V 1.2 The ARRL made a change in their website which forced me to use a different method to read the website. (read_session_count.py)
+
+V1.2.1 Found and corrected an obscure logic bug in read_session_count.py
