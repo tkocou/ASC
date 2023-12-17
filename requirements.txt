@@ -1,7 +1,6 @@
 croniter
 pandas
 requests
-base64
 bz2
 platform
 shutil
