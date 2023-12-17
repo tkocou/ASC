@@ -45,18 +45,74 @@ if ping -q -c 1 google.com >/dev/null 2>&1; then
         rm -rf ./ASC
         git clone https://github.com/tkocou/ASC ./ASC
         mv ./asc.db ./ASC
+        cd ./ASC
         
     ## no ASC, then clone the repository
     else
         echo Cloning repository...
         git clone https://github.com/tkocou/ASC ./ASC
+        cd ./ASC
+    fi
+
+     # Install Python 3.10 and pip
+    echo -n "Checking for python3.10..."
+    if command -v python3.10 > /dev/null 2>&1; then
+      echo "is installed"
+    else
+      read -p "Python3.10 is not installed. Would you like to install Python3.10? [Y/N] " choice
+      if [ "$choice" = "Y" ] || [ "$choice" = "y" ]; then
+        echo "Installing Python3.10..."
+        sudo apt update
+        sudo apt install -y python3.10 python3.10-venv
+      else
+        echo "Please install Python3.10 and try again."
+        exit 1
+      fi
+    fi
+
+    # Install venv module
+    echo -n "Checking for venv module..."
+    if python3.10 -m venv env > /dev/null 2>&1; then
+      echo "is installed"
+    else
+      read -p "venv module is not available. Would you like to install it? [Y/N] " choice
+      if [ "$choice" = "Y" ] || [ "$choice" = "y" ]; then
+        echo "Installing venv module..."
+        sudo apt update
+        sudo apt install -y python3.10-venv
+      else
+        echo "Please install venv module and try again."
+        exit 1
+      fi
+    fi
+# Create a new virtual environment
+    echo -n "Creating virtual environment..."
+    python3.10 -m venv env
+    if [ $? -ne 0 ]; then
+      echo "Failed to create virtual environment. Please check your Python installation and try again."
+      exit 1
+    else
+      echo "is created"
     fi
 else
     echo -e "\e[32mMissing an Internet Connection\e[0m"
 fi
 
+# Activate the virtual environment
+echo -n "Activating virtual environment..."
+source env/bin/activate
+echo "is active"
+
+# Install the required packages
+echo "Installing requirements..."
+python3.10 -m pip install pip --upgrade
+python3.10 -m pip install --upgrade -r ~/ASC/requirements.txt
+
+
+
 ## Check if repository has already been cloned
 ## regardless if there is an Internet Connection
+cd ~
 if [ -f ~/ASC/ASC-DB.py ] ;then
     cd ~/ASC
     # Launch the Python application

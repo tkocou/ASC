@@ -1,0 +1,15 @@
+tkinter
+os
+sys
+re 
+sqlite3
+datetime
+croniter
+threading
+pandas
+requests
+bs4==4.12.2
+base64
+bz2
+platform
+shutil
