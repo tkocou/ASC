@@ -1,5 +1,4 @@
 croniter
-threading
 pandas
 requests
 bs4==4.12.2
