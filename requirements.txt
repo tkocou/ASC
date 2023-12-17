@@ -1,8 +1,8 @@
 croniter
 pandas
 requests
-bs4==4.12.2
 base64
 bz2
 platform
 shutil
+bs4
