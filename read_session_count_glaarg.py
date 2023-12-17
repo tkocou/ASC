@@ -28,13 +28,15 @@ def get_count(self):
     ## works okay in Linux
     try:
         data_frame = pd.read_html(website,flavor='html5lib')
-    except:
+    except Exception as e:
+        print("Error on read_html: ",str(e))
         return True
     ## Convert data frame into a list of lists
     try:
         result = data_frame[1].to_numpy().tolist()
         length_list = len(result)
-    except:
+    except Exception as e:
+        print("Error on data_frame: ",str(e))
         return
     ## result is a list of lists
     ## read each record from list of lists
