@@ -1,7 +1,5 @@
 croniter
 pandas
 requests
-bz2
-platform
 shutil
 bs4
