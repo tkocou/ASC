@@ -2,8 +2,8 @@
 ## The script is written for a Linux Mint / Ubuntu / Debian system
 ## feel free to alter it as you need to
 
-echo "This script is derived from a script written by ParisNeo"
-echo "It is used with the permission of ParisNeo (https://github.com/ParisNeo/lollms-webui)"
+#echo "This script is derived from a script written by ParisNeo"
+#echo "It is used with the permission of ParisNeo (https://github.com/ParisNeo/lollms-webui)"
 
 sleep 2
 
