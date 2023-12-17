@@ -120,7 +120,7 @@ def make_launcher():
                 fh.write("Terminal=false\n")
                 fh.write("Icon="+icon_picture_path+'\n')
                 fh.write("Icon[en_US]="+icon_picture_path+'\n')
-                fh.write("Name[en_US]=CVE-DB\n")
+                fh.write("Name[en_US]=ASC-DB\n")
                 fh.write("Exec="+exec_path+'\n')
                 fh.write("Comment[en_US]="+gv.program+"\n")
                 fh.write("Name=CVE-DB\n")
