@@ -87,7 +87,7 @@ if ping -q -c 1 google.com >/dev/null 2>&1; then
     fi
 # Create a new virtual environment
     echo -n "Creating virtual environment..."
-    python3.10 -m venv env
+    python3.10 -m venv asc_env
     if [ $? -ne 0 ]; then
       echo "Failed to create virtual environment. Please check your Python installation and try again."
       exit 1
@@ -100,7 +100,7 @@ fi
 
 # Activate the virtual environment
 echo -n "Activating virtual environment..."
-source env/bin/activate
+source asc_env/bin/activate
 echo "is active"
 
 # Install the required packages
