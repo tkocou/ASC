@@ -5,8 +5,6 @@
 #echo "This script is derived from a script written by ParisNeo"
 #echo "It is used with the permission of ParisNeo (https://github.com/ParisNeo/lollms-webui)"
 
-sleep 2
-
 if ping -q -c 1 google.com >/dev/null 2>&1; then
     echo -e "\e[32mInternet Connection working fine\e[0m"
     # Install git
@@ -115,6 +113,14 @@ fi
 python3.10 -m pip install pip --upgrade
 python3.10 -m pip install --upgrade -r ~/ASC/requirements.txt
 python3.10 -m pip install beautifulsoup4-4.12.2-py3-none-any.whl --upgrade 
+
+## launcher needs update
+if [ -f ~/bin/ASC-DB ] ;then
+  rm ~/bin/ASC-DB
+fi
+## copy over the start.sh script and make it executable
+cp $SCRIPT_DIR/start.sh ~/bin/ASC-DB
+chmod +x ~/bin/ASC-DB
 
 ## Check if repository has already been cloned
 ## regardless if there is an Internet Connection
