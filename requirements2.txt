@@ -1,2 +1,2 @@
---extra-index-url file://~/ASC/
+--extra-index-url ~/ASC/
 beautifulsoup4>=4.11

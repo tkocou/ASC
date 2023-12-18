@@ -107,9 +107,11 @@ echo "is active"
 echo "Installing requirements..."
 #pwd
 wget  https://files.pythonhosted.org/packages/57/f4/a69c20ee4f660081a7dedb1ac57f29be9378e04edfcb90c526b923d4bebc/beautifulsoup4-4.12.2-py3-none-any.whl 
+SCRIPT_DIR=$( cd -- "$( dirname -- '${BASH_SOURCE[0]}' )" & > /dev/null && pwd )
+ASC_DIR="$SCRIPT_DIR/ASC"
 python3.10 -m pip install pip --upgrade
 python3.10 -m pip install --upgrade -r ~/ASC/requirements.txt
-python3.10 -m pip install --upgrade -r ~/ASC/requirements2.txt
+python3.10 -m pip install 'beautifulsoup4>=4.11' --upgrade -i $ASC_DIR/beautifulsoup4-4.12.2-py3-none-any.whl
 
 
 ## Check if repository has already been cloned
