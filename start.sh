@@ -118,7 +118,7 @@ python3.10 -m pip install beautifulsoup4-4.12.2-py3-none-any.whl --upgrade
 if [ -f ~/bin/ASC-DB ] ;then
   rm ~/bin/ASC-DB
 fi
-## copy over the start.sh script and make it executable
+## copy over this script and make it executable
 cp $SCRIPT_DIR/start.sh ~/bin/ASC-DB
 chmod +x ~/bin/ASC-DB
 
