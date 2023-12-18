@@ -25,9 +25,9 @@ if ping -q -c 1 google.com >/dev/null 2>&1; then
       fi
     fi
     ## some other packages which should be installed
-    sudo apt update
-    sudo apt -y install python3 python-is-python3 python3-tk
-    pip install croniter pandas html5lib bs4 markdown tcl
+    #sudo apt update
+    #sudo apt -y install python3 python-is-python3 python3-tk
+    #pip install croniter pandas html5lib bs4 markdown tcl
 
     ## move to the $HOME directory
     cd ~
