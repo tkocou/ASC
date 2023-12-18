@@ -106,6 +106,7 @@ echo "is active"
 # Install the required packages
 echo "Installing requirements..."
 python3.10 -m pip install pip --upgrade
+python3.10 -m pip uninstall beautifulsoup4 
 python3.10 -m pip install beautifulsoup4 --index-url https://files.pythonhosted.org/packages/57/f4/a69c20ee4f660081a7dedb1ac57f29be9378e04edfcb90c526b923d4bebc/beautifulsoup4-4.12.2-py3-none-any.whl
 python3.10 -m pip install --upgrade -r ~/ASC/requirements.txt
 
