@@ -2,3 +2,4 @@ croniter
 pandas
 requests
 bottleneck>=1.3.4
+html5lib
