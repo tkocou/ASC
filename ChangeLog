@@ -70,4 +70,5 @@ V 1.2 The ARRL made a change in their website which forced me to use a different
 
 V1.2.1 Found and corrected an obscure logic bug in read_session_count.py
 
-V1.2.2 Fixed an error in the ve_utilities.py file, updated GLAARG session read.
+V1.2.2 Fixed an error in the ve_utilities.py file, updated GLAARG session read, 
+        For Linux, had to rewrite the program to use a virtual Python environment due to a clash with the default system Python install.
