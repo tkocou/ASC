@@ -33,13 +33,13 @@ if ping -q -c 1 google.com >/dev/null 2>&1; then
     cd ~
 
     # Check if git directory exists
-    if [[ -d ./ASC/.git ]] ; then
+    if [ -d ./ASC/.git ] ; then
         cd ./ASC
         echo Pulling latest changes
         git pull
 
     ## Check if we have an older ASC installation
-    elif  [[ -d ./ASC ]] ; then
+    elif  [ -d ./ASC ] ; then
         echo Saving database and removing old installation
         cp ./ASC/asc.db .
         rm -rf ./ASC
