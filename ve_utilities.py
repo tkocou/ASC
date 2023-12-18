@@ -2,7 +2,7 @@ import os
 import base64
 import bz2
 import platform
-import shutil
+#import shutil
 
 import global_var as gv
 import icons_array as ia 
