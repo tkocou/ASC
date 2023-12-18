@@ -1,7 +1,4 @@
---index-url https://pypi.org/simple
 croniter
 pandas
 requests
 bottleneck>=1.3.4
---extra-index-url ~/ASC/
-beautifulsoup4>=4.11
