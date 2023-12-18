@@ -100,7 +100,7 @@ fi
 
 # Activate the virtual environment
 echo -n "Activating virtual environment..."
-source asc_env/bin/activate
+source ~/ASC/asc_env/bin/activate
 echo "is active"
 
 # Install the required packages
