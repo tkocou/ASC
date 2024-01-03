@@ -83,12 +83,12 @@ def get_count(self,state):
         call_check = []
         call_check.append(record[0])
         db_cursor.execute("SELECT * FROM ve_count WHERE call = ?",tuple(call_check))
-        record_check = db_cursor.fetchall()
+        callsign_check = db_cursor.fetchall()
         ## do we have an empty database?
         db_cursor.execute("SELECT COUNT(*) FROM ve_count")
         len_rc = db_cursor.fetchall()
-        len_record_check = int(len_rc[0][0])
-        ## 'record_check' is a list type set to 'None' if no record was fetched
+        len_db_check = int(len_rc[0][0])
+        ## 'callsign_check' is a list type set to '[]' if no record was fetched
         ## transfer over the record from the ARRL <- always contains VE data
         index = 0
         ve_record = []
@@ -117,14 +117,24 @@ def get_count(self,state):
             initial_tag = '1'
         ve_record.append(initial_tag) ## set the update tag
         ## if a blank was returned, do an insert
-        ## During an initial build of the database, "record_check" will always be set to None
-        ## "len_record_check" will be zero for an empty database
-        if record_check == None or len_record_check < 1 or record_check == []:
-            rec_cols = ', '.join(gv.ve_field_list)
-            q_marks = ','.join(list('?'*len(gv.ve_field_list)))
-            values = tuple(ve_record)
-            sql = "INSERT INTO ve_count ("+rec_cols+") VALUES ("+q_marks+")"
-            db_cursor.execute(sql,values)
+        ## During an initial build of the database, "callsign_check" will always be set to []
+        ## "len_db_check" will be zero for an empty database
+        
+        ## Do we have an empty db or is the callsign not in the db yet?
+        if len_db_check < 1 or callsign_check == []:
+            try:
+                rec_cols = ', '.join(gv.ve_field_list)
+                q_marks = ','.join(list('?'*len(gv.ve_field_list)))
+                values = tuple(ve_record)
+                sql = "INSERT INTO ve_count ("+rec_cols+") VALUES ("+q_marks+")"
+                db_cursor.execute(sql,values)
+            except: ## catch DB check slip-ups
+                ## the callsign does exist, switching to an update
+                update_flag = True
+                tag_update = '1'
+                values = tuple([int(record[3]),tag_update,call_check[0]]) ## set
+                sql = "UPDATE ve_count SET scount = ?, tag = ? WHERE call = ?"
+                db_cursor.execute(sql,values)
             db_connection.commit()
             
         else: ## record exists, do an update

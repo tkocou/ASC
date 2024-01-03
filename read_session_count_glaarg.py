@@ -40,6 +40,8 @@ def get_count(self):
         return
     ## result is a list of lists
     ## read each record from list of lists
+    with open("glarg_dump.txt","w") as du:
+        du.write(str(result))
     initial_tag = '0' ## set initial update tag
     for record in result:
         ve_record = []
@@ -49,14 +51,16 @@ def get_count(self):
         ## Parse the record to just the callsign
         call_record = record[1]
         call_check.append(call_record)
-        
+            
         db_cursor.execute("SELECT * FROM glaarg_count WHERE csign = ?",tuple(call_check))
-        record_check = db_cursor.fetchall()
+        callsign_check = db_cursor.fetchall()
+        
         ## do we have an empty database?
         db_cursor.execute("SELECT COUNT(*) FROM glaarg_count")
         len_rc = db_cursor.fetchall()
-        len_record_check = int(len_rc[0][0])
-        ## 'record_check' is a list type set to 'None' if no record was fetched
+        len_db_check = int(len_rc[0][0])
+        
+        ## 'callsign_check' is a list type set to 'None' if no record was fetched
         ## transfer over the record from the GLAARG <- always contains VE data
         index = 0
         for item in gv.gl_input_list:
@@ -74,18 +78,31 @@ def get_count(self):
         ve_record.append(initial_tag) ## set the update tag
         ## if a blank was returned, do an insert
         ## During an initial build of the database, "record_check" will always be set to None
-        ## "len_record_check" will be zero for an empty database
-        if record_check == None or len_record_check < 1 or record_check == []: 
+        ## "len_db_check" will be zero for an empty database
+            
+        ## add a record if the db is empty or if the callsign is not already in the database
+        if len_db_check < 1 or callsign_check == []: 
             ## Add new record to DB
-            rec_cols = ', '.join(gv.gl_field_list)
-            q_marks = ','.join(list('?'*len(gv.gl_field_list)))
-            values = tuple(ve_record)
-            sql = "INSERT INTO glaarg_count ("+rec_cols+") VALUES ("+q_marks+")"
-            db_cursor.execute(sql,values)
+            try:
+                rec_cols = ', '.join(gv.gl_field_list)
+                q_marks = ','.join(list('?'*len(gv.gl_field_list)))
+                values = tuple(ve_record)
+                sql = "INSERT INTO glaarg_count ("+rec_cols+") VALUES ("+q_marks+")"
+                db_cursor.execute(sql,values)
+                text = "Adding to database, VE is " + str(ve_record[1])+ '.\n'
+                self.result_text.insert(tk.END,text)
+                self.result_text.yview(tk.END)
+            except: ## catch duplicate in case of a DB check slip-up
+                ## the callsign does exist, switching to an update
+                update_flag = True
+                tag_update = '1'
+                values = tuple([int(record[3]),int(record[4]),int(record[5]),int(record[6]),int(record[7]),tag_update,call_check[0]]) ## set
+                sql = "UPDATE glaarg_count SET sess_ct = ?, helped = ?, overseen = ?, new_lic = ?, upgrades = ?, tag = ? WHERE csign = ?"
+                db_cursor.execute(sql,values)
+                text = "Updating database, VE is " + str(call_check[0])+ '.\n'
+                self.result_text.insert(tk.END,text)
+                self.result_text.yview(tk.END)
             db_connection.commit()
-            text = "Adding to database, VE is " + str(ve_record[1])+ '.\n'
-            self.result_text.insert(tk.END,text)
-            self.result_text.yview(tk.END)
             self.update_idletasks()
             
         else: ## record exists, do an update
