@@ -6,8 +6,8 @@ NOTE: The Windows executable has been compiled on Windows 11 and tested on both 
 
 ## A new script has been added for those running a M1/M2 MacOS and Linux systems
 
-NOTE: Linux|MacOS; When a new release of ASC-DB is announced, please re-run the **install_ASC_(macOS | Linux).sh** 
-to pull the latest release and update your system
+NOTE: MacOS; When a new release of ASC-DB is announced, please re-run the **install_ASC_macOS.sh** 
+script to pull the latest release and update your system. For Linux; re-run the **start.sh** script file.
 
 ## Current release version is 1.3
 
