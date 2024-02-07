@@ -1,0 +1,7 @@
+The b2sum utility can be downloaded from: https://sourceforge.net/projects/b2sum-for-windows/
+
+Download the following files: ASC-DB.exe & ASC_verify.txt
+
+To verify the ASC-DB.exe file, run the b2sum in a Powershell or Cmd terminal in the same directory where the downloaded files are: 
+
+b2sum -c  ASC_verify.txt
