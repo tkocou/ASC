@@ -101,7 +101,7 @@ def session_count_data(self):
             db_cursor.execute(sql_by_call,tuple(tmp_result))
             self.my_record = db_cursor.fetchone()
         
-        if self.my_record == None:
+        if self.my_record is None:
             self.my_count = 0
         else:    
             self.my_count = self.my_record[4]  ## sess_ct

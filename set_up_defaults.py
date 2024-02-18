@@ -2,7 +2,7 @@
 
 import tkinter as tk
 from tkinter import ttk
-from tkinter import messagebox as mb
+#from tkinter import messagebox as mb
 
 import sqlite3
 import global_var as gv
@@ -65,7 +65,7 @@ def set_defaults(self):
     self.set_state_entry = tk.Entry(self.topper,textvariable=self.defaultState, width = 3)
     self.set_state_entry.grid(column=1, row=0, sticky='nw', padx=(120,5), pady=(5,5))
     
-    auto_flag = ""
+    #auto_flag = ""
     
     self.auto_flag_label = tk.Label(self.topper, text = '<- Auto Update')
     self.auto_flag_label.grid(column=0, row=1, sticky='nw', padx=(120,5), pady=(5,5))
@@ -189,7 +189,8 @@ def save_settings(self):
     db_cursor.execute(sql,values)
     db_connection.commit()
     db_cursor.execute("SELECT * FROM settings")
-    set_tmp = db_cursor.fetchone()
+    #set_tmp = db_cursor.fetchone()
+    db_cursor.fetchone()
     db_connection.close()
     ## Clean up and exit
     self.refresh_database()

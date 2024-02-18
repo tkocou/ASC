@@ -1,14 +1,14 @@
 ## Copyright 2023 by Thomas Kocourek, N4FWD
 
-import pandas as pd
+#import pandas as pd
 import sqlite3
 import global_var as gv
 from datetime import date
-import tkinter as tk
-from tkinter import scrolledtext as st
+#import tkinter as tk
+#from tkinter import scrolledtext as st
 import requests
 from bs4 import BeautifulSoup
-import os
+#import os
 
 def get_count(self,state):
     reject = ['Call','input','Location','select','Sort','option']
@@ -19,8 +19,9 @@ def get_count(self,state):
     db_connection = sqlite3.connect(gv.asc_database_path)
     db_cursor = db_connection.cursor()
 
-    db_cursor.execute("SELECT * FROM settings")
-    setting = db_cursor.fetchone()
+    #db_cursor.execute("SELECT * FROM settings")
+    #setting = db_cursor.fetchone()
+    #db_cursor.fetchone()
     
     website = gv.arrl_url + state
     today = []
@@ -101,7 +102,7 @@ def get_count(self,state):
                     ve_record.append(record[index])
                 index += 1
             ## correct for missing county data
-            except:
+            except Exception:
                 temp_list = []
                 temp_list.append(ve_record[0]) # append callsign
                 temp_list.append("N/A") # add missing county
@@ -128,7 +129,7 @@ def get_count(self,state):
                 values = tuple(ve_record)
                 sql = "INSERT INTO ve_count ("+rec_cols+") VALUES ("+q_marks+")"
                 db_cursor.execute(sql,values)
-            except: ## catch DB check slip-ups
+            except Exception: ## catch DB check slip-ups
                 ## the callsign does exist, switching to an update
                 update_flag = True
                 tag_update = '1'

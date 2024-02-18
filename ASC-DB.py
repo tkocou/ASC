@@ -8,13 +8,13 @@ from tkinter import messagebox as mb
 
 import os
 import sys
-import re
+#import re
 import sqlite3
 from datetime import datetime
 from datetime import date
 from croniter import croniter 
-from threading import *
-from threading import Thread
+#from threading import *
+from threading import Thread, Event
     
 ## import support files here
 import ve_utilities as ut
@@ -29,6 +29,7 @@ import read_session_count_glaarg as rg
 import glaarg_session_count_display as gls
 import glaarg_detailed_count_display as gld
 import read_state as rs
+import detailed_top_100 as t100
 
 # for inter-thread comms
 event = Event()
@@ -182,6 +183,8 @@ class App(tk.Tk):
         self.reportmenu.add_command(label="Other Session Counts - All", command=lambda: rt.read_text_file(self,'1'))
         self.reportmenu.add_command(label="Other Session Counts - ARRL Only", command=lambda: rt.read_text_file(self,'2'))
         self.reportmenu.add_command(label="Other Session Counts - GLAARG Only", command=lambda: rt.read_text_file(self,'3'))
+        self.reportmenu.add_separator()
+        self.reportmenu.add_command(label="Top 100",command=lambda: t100.detailed_top_data(self))
         
         
         self.helpmenu = tk.Menu(self.menubar, tearoff = 0)
@@ -323,26 +326,27 @@ class App(tk.Tk):
             self.as_of_var.set(gv.settings[2])
             self.glaarg_as_of_var.set(gv.settings[3])
         
-        if self.running == False and self.settings_check[gv.cron_activate_flag] == '1':
+        if self.running is False and self.settings_check[gv.cron_activate_flag] == '1':
             
             ## Inserting default auto-update values into the 'settings' table
             rec_cols = ', '.join(gv.settings_field_update_list)
             q_marks = ','.join(list('?'*len(gv.settings_field_update_list)))
             values = tuple(gv.settings_default_update_values)
             sql = "INSERT INTO settings ("+rec_cols+") VALUES ("+q_marks+")"
-            sql_result = db_cursor.execute(sql,values)
+            #sql_result = db_cursor.execute(sql,values)
+            db_cursor.execute(sql,values)
             ## commit insert
             db_connection.commit()
         
         ## Do not invoke the auto-update until parameters are set
         elif self.settings_check[gv.cron_activate_flag] == '1' and self.running : 
-            if self.update_db_obj == None: ## thread obj has not been initialized
+            if self.update_db_obj is None: ## thread obj has not been initialized
                 self.update_db_obj = Update(self, self.run_auto_update,self.result_text,gv.cron_string) ## Pass the parameters
                 self.update_db_obj.start()
                 self.update_idletasks()
         else:
             ## do these following items only if the thread is running
-            if self.update_db_obj != None: ## object was initialized
+            if self.update_db_obj is not None: ## object was initialized
                 self.update_db_obj.stop()
                 event.set() ## force threading event to release
                 self.update_db_obj = None
@@ -366,7 +370,7 @@ class App(tk.Tk):
 
     def get_quiet_arrl_data(self):
         for state in gv.states_list:
-            website = gv.arrl_url + state
+            #website = gv.arrl_url + state
             rsc.get_count(self,state)
         ## update GUI
         today_date = str(date.today())
@@ -406,7 +410,7 @@ class App(tk.Tk):
     def get_glaarg_data(self):
         ## Clear the text box
         self.result_text.delete(1.0,tk.END)
-        website = gv.glaarg_url
+        #website = gv.glaarg_url
         mb.showinfo("GLAARG Import/Update","The GLAARG website will take some time to complete the import/update. Please wait for the 'Finished!' message.")
         text = "Importing GLAARG stats ...\n"
         self.result_text.insert(tk.END,text)
@@ -490,7 +494,7 @@ class App(tk.Tk):
             #print("ARRL: ",arrl_check)
             if len(arrl_check) == 0:
                 arrl_check = None
-        except:
+        except Exception:
             arrl_check = None
         
         try:    
@@ -499,7 +503,7 @@ class App(tk.Tk):
             #print("GLAARG: ",glaarg_check)
             if len(glaarg_check) == 0:
                 glaarg_check = None
-        except:
+        except Exception:
             glaarg_check = None
             
         sql_match = 'SELECT * FROM ve_count WHERE id = ?'
@@ -508,7 +512,7 @@ class App(tk.Tk):
         
         ## ARRL record [call,county,accreditation date,count]
         self.their_lookup_var.set('')
-        if arrl_check != None:
+        if arrl_check is not None:
             for record in arrl_check:
                 exact_match = record[1].split(' ')
                 if exact_match[0] == self.lookup_callsign.upper() and self.shebang:
@@ -517,14 +521,14 @@ class App(tk.Tk):
                     try:
                         db_cursor.execute(sql_match,tuple(tmp_list))
                         arrl_check = db_cursor.fetchall()
-                    except:
+                    except Exception:
                         arrl_check = None
                     break
         
         ## GLAARG record ['ve_num','csign','ve_name','sess_ct','helped','overseen','new_lic','upgrades']  
         self.glaarg_their_lookup_var.set('')
         tmp_list = []
-        if glaarg_check != None:
+        if glaarg_check is not None:
             for record in glaarg_check:
                 #print("record: ",record)
                 exact_match = record[2]
@@ -539,7 +543,7 @@ class App(tk.Tk):
                         #print("Record: ",tmp_list)
                         db_cursor.execute(glaarg_sql_match,tuple(tmp_list))
                         glaarg_check = db_cursor.fetchall()
-                    except:
+                    except Exception:
                         glaarg_check = None
                     break
             #else:
@@ -548,7 +552,7 @@ class App(tk.Tk):
         db_connection.close()
         #self.update_idletasks()
         self.result_text.delete(1.0,tk.END)
-        if arrl_check != None:
+        if arrl_check is not None:
             if len(arrl_check) == 1 or self.exact_matched:
                 ## ARRL record ['call','county','accredit','scount','state']
                 record = arrl_check[0]
@@ -576,7 +580,7 @@ class App(tk.Tk):
                     
         #if self.lookup_callsign.upper() == 'NOCALL':
         #    pass
-        elif arrl_check == None or (self.exact_matched == False and self.shebang):
+        elif arrl_check is None or (self.exact_matched is False and self.shebang):
             #self.result_text.delete(1.0,tk.END)
             self.their_call_var.set('')
             self.their_county_var.set('')
@@ -591,7 +595,7 @@ class App(tk.Tk):
         #if len(glaarg_check) == 0:
         #    glaarg_check = None
             
-        if glaarg_check != None:
+        if glaarg_check is not None:
             if len(glaarg_check) == 1 or self.glaarg_exact_matched:
                 ## GLAARG record  ['ve_num','csign','ve_name','sess_ct','helped','overseen','new_lic','upgrades']
                 record = glaarg_check[0] ## extract tuple
@@ -624,7 +628,7 @@ class App(tk.Tk):
                     
         #if self.lookup_callsign.upper() == 'NOCALL':
         #    pass
-        elif glaarg_check == None or (self.glaarg_exact_matched == False and self.shebang):
+        elif glaarg_check is None or (self.glaarg_exact_matched is False and self.shebang):
             #print("glaarg_check",glaarg_check)
             self.glaarg_their_call_var.set('')
             self.glaarg_their_session_count_var.set('')
@@ -655,7 +659,7 @@ class App(tk.Tk):
             gv.ve_stat = db_cursor.fetchall()
             ## remove sql reference to record
             gv.ve_stat.pop(0)
-        except:
+        except Exception:
             gv.ve_stat = ['NO-CALL','NO-COUNTY','NO-ACCREDITATION','NO-COUNT','NO-STATE']
         
         db_connection.close()
@@ -667,7 +671,7 @@ class App(tk.Tk):
             self.sort_dir = True
         
     def goodbye(self):
-        if self.update_db_obj != None:
+        if self.update_db_obj is not None:
             self.update_db_obj.stop()
             event.set() ## force threading event to release
         sys.exit()

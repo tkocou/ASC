@@ -1,7 +1,7 @@
 ## Copyright 2023 by Thomas Kocourek, N4FWD
 
 import tkinter as tk
-from tkinter import ttk
+#from tkinter import ttk
 from tkinter import messagebox as mb
 
 import os
@@ -39,8 +39,9 @@ def read_text_file(self,flag):
     ## save results into generic text file
     capture_file = os.path.join(gv.base_rpt_dir,'another_session_count.txt')
     try:
-        with open(capture_file,'w') as fh: pass
-    except:
+        with open(capture_file,'w') as fh: 
+            pass
+    except Exception:
         ## file exists, do nothing
         pass
     ## open the text file results capture file
@@ -91,7 +92,7 @@ def read_text_file(self,flag):
                     self.exact_matched = True
                 else:
                     record_check = []
-            except: ## database problem
+            except Exception: ## database problem
                 record_check = []
             
             if len(record_check) > 1:  ## multiple match
@@ -109,7 +110,7 @@ def read_text_file(self,flag):
                             record_check = db_cursor.fetchall()
                             ## add exactly matched callsign
                             callsign_list.extend(record_check)
-                        except: ## database problem
+                        except Exception: ## database problem
                             record_check = []
                         break
             else: ## add single matched callsign
@@ -138,7 +139,7 @@ def read_text_file(self,flag):
                     self.exact_matched = True
                 else:
                     record_check = []
-            except: 
+            except Exception: 
                 record_check = []
             if len(record_check) > 1:  ## multiple match
                 self.exact_matched = False  
@@ -155,7 +156,7 @@ def read_text_file(self,flag):
                             record_check = db_cursor.fetchall()
                             ## add exactly matched callsign
                             glaarg_callsign_list.extend(record_check)
-                        except: ## database problem
+                        except Exception: ## database problem
                             record_check = []
                         break
             else: ## add single matched callsign

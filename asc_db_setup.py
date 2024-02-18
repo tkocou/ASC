@@ -2,11 +2,12 @@
 
 import os
 import sqlite3
-import sys
+#from sqlite3 import traceback
+#import sys
 import ve_utilities as ut
 import global_var as gv
-import tkinter as tk
-from tkinter import ttk
+#import tkinter as tk
+#from tkinter import ttk
 from tkinter import messagebox as mb
 
 def setup():
@@ -19,7 +20,7 @@ def setup():
     os.chdir(basic_dir)
     ## set the flag
     db_result_flag = True
-    glaarg_update = False
+    #glaarg_update = False
     
     ## set path to databases
     tmp_dir = os.path.join(basic_dir,gv.asc_dir)
@@ -45,7 +46,7 @@ def setup():
         db_cursor = db_connection.cursor()
         db_cursor.execute(sql)
         tested_value = db_cursor.fetchone()
-        if tested_value == None: ## No table labeled as 'glaarg_count'
+        if tested_value is None: ## No table labeled as 'glaarg_count'
             ## remove old table and remind user
             os.remove(gv.asc_database_path)
             mb.showinfo("Alert","Database has been flushed.\nExiting the ASC-DB program to rebuild the database.\nRemember to run Set Defaults.\n")
@@ -59,7 +60,8 @@ def setup():
         try:
             ## create a new database
             ##
-            with open(gv.asc_database_path,mode="w"):pass
+            with open(gv.asc_database_path,mode="w"): 
+                pass
             
             db_connection = sqlite3.connect(gv.asc_database_path)
             db_cursor = db_connection.cursor()
@@ -69,14 +71,16 @@ def setup():
                     CREATE TABLE IF NOT EXISTS ve_count (id INTEGER PRIMARY KEY AUTOINCREMENT,
                     call TEXT NOT NULL UNIQUE, county TEXT NOT NULL, accredit TEXT NOT NULL, scount INTEGER NOT NULL, state TEXT NOT NULL, tag TEXT);
                 """
-            sql_result = db_cursor.execute(sql)
+            #sql_result = db_cursor.execute(sql)
+            db_cursor.execute(sql)
             
             sql = """
                     CREATE TABLE IF NOT EXISTS glaarg_count (id INTEGER PRIMARY KEY AUTOINCREMENT,
                     ve_num TEXT NOT NULL UNIQUE, csign TEXT NOT NULL, ve_name TEXT NOT NULL, sess_ct INTEGER NOT NULL, helped INTEGER NOT NULL, overseen INTEGER NOT NULL,
                     new_lic INTEGER NOT NULL, upgrades INTEGER NOT NULL, tag TEXT);
                 """
-            sql_result = db_cursor.execute(sql)
+            #sql_result = db_cursor.execute(sql)
+            db_cursor.execute(sql)
             
             ## 'date' is for recording the last date the database was updated
             ## ditto for glaarg via 'gl_date'
@@ -89,7 +93,8 @@ def setup():
                     date TEXT , gl_date TEXT, defaultState TEXT, autoflag TEXT , cronMin TEXT , cronHr TEXT , cronDom TEXT , cronMon TEXT , 
                     cronDow TEXT);
                 """
-            sql_result = db_cursor.execute(sql)
+            #sql_result = db_cursor.execute(sql)
+            db_cursor.execute(sql)
             
             ## commit both sql statements and create tables
             db_connection.commit() 
@@ -99,19 +104,21 @@ def setup():
             q_marks = ','.join(list('?'*len(gv.settings_field_list_glaarg)))
             values = tuple(gv.settings_default_values_glaarg)
             sql = "INSERT INTO settings ("+rec_cols+") VALUES ("+q_marks+")"
-            sql_result = db_cursor.execute(sql,values)
+            #sql_result = db_cursor.execute(sql,values)
+            db_cursor.execute(sql,values)
             ## commit insert
             db_connection.commit()
                
             db_cursor.execute("SELECT * FROM settings;")
-            sql_records = db_cursor.fetchall()
+            #sql_records = db_cursor.fetchall()
+            db_cursor.fetchall()
             
         except sqlite3.Error as er: ## in case of a SQL error, let's get more info
             print('SQLite error: %s' % (' '.join(er.args)))
             print("Exception class is: ", er.__class__)
-            print('SQLite traceback: ')
-            exc_type, exc_value, exc_tb = sys.exc_info()
-            print(traceback.format_exception(exc_type, exc_value, exc_tb))
+            #print('SQLite traceback: ')
+            #exc_type, exc_value, exc_tb = sys.exc_info()
+            #print(traceback.format_exception(exc_type, exc_value, exc_tb))
             db_result_flag = False
     ## And close the new database
     db_connection.close()

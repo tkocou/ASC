@@ -1,12 +1,12 @@
 ## Copyright 2023 by Thomas Kocourek, N4FWD
 
 import tkinter as tk
-from tkinter import ttk
+#from tkinter import ttk
 from tkinter import messagebox as mb
 
 import os
-import sqlite3
-from datetime import datetime
+#import sqlite3
+#from datetime import datetime
 from datetime import date
 import global_var as gv
 import read_session_count as rsc
@@ -16,7 +16,7 @@ def read_state_file(self):
     ## selectively import only those states
     
     cs_read = ""
-    record_check = []
+    #record_check = []
     self.result_text.delete(1.0,tk.END)
     file_list = os.listdir(gv.base_rpt_dir)
     target_file = os.path.join(gv.base_rpt_dir,gv.target_name)

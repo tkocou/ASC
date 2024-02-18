@@ -5,8 +5,8 @@ import sqlite3
 import global_var as gv
 from datetime import date
 import tkinter as tk
-from tkinter import scrolledtext as st
-from tkinter import messagebox as mb
+#from tkinter import scrolledtext as st
+#from tkinter import messagebox as mb
 
 def get_count(self):
     
@@ -17,7 +17,7 @@ def get_count(self):
     db_cursor = db_connection.cursor()
 
     db_cursor.execute("SELECT * FROM settings")
-    setting = db_cursor.fetchone()
+    #setting = db_cursor.fetchone()
     
     website = gv.glaarg_url 
     today = []
@@ -34,7 +34,7 @@ def get_count(self):
     ## Convert data frame into a list of lists
     try:
         result = data_frame[1].to_numpy().tolist()
-        length_list = len(result)
+        #length_list = len(result)
     except Exception as e:
         print("Error on data_frame: ",str(e))
         return
@@ -92,7 +92,7 @@ def get_count(self):
                 text = "Adding to database, VE is " + str(ve_record[1])+ '.\n'
                 self.result_text.insert(tk.END,text)
                 self.result_text.yview(tk.END)
-            except: ## catch duplicate in case of a DB check slip-up
+            except Exception: ## catch duplicate in case of a DB check slip-up
                 ## the callsign does exist, switching to an update
                 update_flag = True
                 tag_update = '1'

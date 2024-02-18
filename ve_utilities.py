@@ -54,7 +54,7 @@ def set_environment():
         ## Create the ASC directory
         try:
             os.mkdir(asc_dir)
-        except: ## directory already exists, do nothing
+        except Exception: ## directory already exists, do nothing
             pass
 
         ## Create the CSV holding directory path
@@ -65,7 +65,7 @@ def set_environment():
 
         try:
             os.mkdir(gv.base_rpt_dir)
-        except: ## directory already exists, do nothing
+        except Exception: ## directory already exists, do nothing
             pass
         '''
         for vec in gv.vec_list:
