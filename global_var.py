@@ -2,7 +2,7 @@
 
 ## program vars
 program = "Another Session Count for VEs"
-version = "1.4"
+version = "1.5"
 
 top_window_x = 1280
 top_window_y = 700

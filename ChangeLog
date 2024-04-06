@@ -77,3 +77,5 @@ V 1.3 03_Jan2024; Re-worked the import logic for both the ARRL and GLAARG data. 
         catch the new VE record and add it to the database.
 
 V 1.4 17_Feb_2024; ran files through RUFF linter and cleaned up the coding errors, Added a top 100 report to menu. Results are saved in the REPORTS directory
+
+V 1.5 06_Apr_2024; Fixed a defect in the filtering logic used to extract data (read_session_data.py)

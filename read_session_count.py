@@ -4,11 +4,10 @@
 import sqlite3
 import global_var as gv
 from datetime import date
-#import tkinter as tk
-#from tkinter import scrolledtext as st
 import requests
 from bs4 import BeautifulSoup
-#import os
+
+debug_analyze = False  # Is set to False in production. Is set to True for development.
 
 def get_count(self,state):
     reject = ['Call','input','Location','select','Sort','option']
@@ -18,22 +17,22 @@ def get_count(self,state):
     
     db_connection = sqlite3.connect(gv.asc_database_path)
     db_cursor = db_connection.cursor()
-
-    #db_cursor.execute("SELECT * FROM settings")
-    #setting = db_cursor.fetchone()
-    #db_cursor.fetchone()
     
     website = gv.arrl_url + state
     today = []
     result = []
     update_flag = False
     
-    ## Read website page
-    html_text = requests.get(website).text
+    if debug_analyze:
+        capture_filename = "transaction_dump.txt"
+        dt = open(capture_filename,'a')
     
+    html_text = requests.get(website).text
+
     ## Filter data from raw HTML
     soup = BeautifulSoup(html_text, 'html.parser')
-    find_all = soup.find_all(['tr','td'])
+    
+    find_all = soup.find_all(['td'])
     
     capture_flag = False
     temp_list = []
@@ -43,37 +42,55 @@ def get_count(self,state):
     ## a parsing loop to extract the VE info
     ##
     for line in find_all:
+        if debug_analyze:
+            line_txt = "Line in find_all: "+str(line)+'\n'
+            dt.write(line_txt)
+        line_txt = str(line) ## reset to line only
         ve_record = []
-        call_check = []
-        text = str(line)
+        call_check = []     
         reject_flag = False
         for check in reject:
-            if check in text:
-               reject_flag = True
+            if check in line_txt:
+                if debug_analyze:
+                    line_check = f"check = {check}: reject_flag = True\n"
+                    dt.write(line_check)
+                reject_flag = True
         if reject_flag: ## loop back for another line of text
+            if debug_analyze:
+                dt.write("Reject_flag is set. Loop back.\n")
             continue
-        if text[:3] == "<tr": ## more rejection based on table markup
-            capture_flag = False
-            
+        if debug_analyze:
+            temp_var = f"t_index = {t_index}\n"
+            dt.write(temp_var)
         ## Looking for text containing the callsign and name of VE
-        
-        if text[:4] == "<td>" and "</b>" in text and text[len(text)-5:] == "</td>" and t_index == 0:
-            output = text[7:-5].replace('</b>','')
+        if line_txt[:4] == "<td>" and "</b>" in line_txt and line_txt[len(line_txt)-5:] == "</td>" and t_index == 0:
+            output = line_txt[7:-5].replace('</b>','')
             capture_flag = True
             temp_list.append(output)
+            if debug_analyze:
+                temp_txt = f"capture_flag is True, CS output is {output}.\n"
+                dt.write(temp_txt)
+                dt.flush()
             t_index += 1
         ## Looking for additional information: county, accreditation and count
-        elif text[:4] == "<td>" and text[len(text)-5:] == "</td>" and capture_flag and t_index <4:
-            output = text[4:len(text)-5]
+        elif line_txt[:4] == "<td>" and line_txt[len(line_txt)-5:] == "</td>" and capture_flag and t_index <3:
+            output = line_txt[4:len(line_txt)-5]
             temp_list.append(output)
+            if debug_analyze:
+                temp_txt = f"Additional information is {output}. Saving.\n"
+                dt.write(temp_txt)
             t_index += 1
         ## All data for the VE has been captured, reset some variables
-        elif t_index == 4:
+        elif t_index > 2:
+            output = line_txt[4:len(line_txt)-5]
+            temp_list.append(output)
             capture_flag = False
             t_index = 0
             result.append(temp_list)
+            if debug_analyze:
+                dt.write("\n\nCapture_flag is False. Finished and saving: "+str(temp_list)+" ....Next data\n\n")
+                dt.flush()
             temp_list = []
-            
     ## Now result is a list of lists
     for record in result: 
         ## we now have a list 'record' with [call,county,accreditation date,count]
@@ -183,6 +200,7 @@ def get_count(self,state):
     db_cursor.execute(sql,tuple(today))
     db_connection.commit()
     db_connection.close()
-    
+    if debug_analyze:
+        dt.close()
             
         
