@@ -70,8 +70,7 @@ def read_state_file(self):
             if len(ARRL_start) != 0 and state != ARRL_start and start_flag:
                 continue
             start_flag = False
-            website = gv.arrl_url + state.upper()
-            text = "Importing from URL: "+website+'\n'
+            text = "Importing: "+state.upper()+'\n'
             with open(gv.temp_fetch_path,'w') as gs:
                 gs.write(state)
             self.result_text.insert(tk.END,text)

@@ -10,8 +10,8 @@ from bs4 import BeautifulSoup
 debug_analyze = False  # Is set to False in production. Is set to True for development.
 
 def get_count(self,state):
-    reject = ['Call','input','Location','select','Sort','option']
-
+    reject = ['input','Location','select','Sort','option']
+    
     ## This function checks each line of data against the database
     ## either it inserts a new record, or it updates an existing record
     
@@ -45,6 +45,7 @@ def get_count(self,state):
         if debug_analyze:
             line_txt = "Line in find_all: "+str(line)+'\n'
             dt.write(line_txt)
+            dt.flush()
         line_txt = str(line) ## reset to line only
         ve_record = []
         call_check = []     
@@ -62,6 +63,7 @@ def get_count(self,state):
         if debug_analyze:
             temp_var = f"t_index = {t_index}\n"
             dt.write(temp_var)
+            dt.flush()
         ## Looking for text containing the callsign and name of VE
         if line_txt[:4] == "<td>" and "</b>" in line_txt and line_txt[len(line_txt)-5:] == "</td>" and t_index == 0:
             output = line_txt[7:-5].replace('</b>','')
@@ -92,7 +94,9 @@ def get_count(self,state):
                 dt.flush()
             temp_list = []
     ## Now result is a list of lists
-    for record in result: 
+    record_count = 0
+    for record in result:
+        record_count += 1 
         ## we now have a list 'record' with [call,county,accreditation date,count]
         ## check if callsign exist in current table
         ## Parse the record to just the callsign
@@ -111,6 +115,9 @@ def get_count(self,state):
         index = 0
         ve_record = []
         for item in gv.ve_input_list:
+            if debug_analyze:
+                line_txt = "Raw data - Record data: "+item+': '+str(record[index])+'\n'
+                dt.write(line_txt)
             ## Set up a error trap in case of missing county data
             try:
                 if index == 3:
@@ -156,6 +163,9 @@ def get_count(self,state):
             db_connection.commit()
             
         else: ## record exists, do an update
+            if debug_analyze:
+                line_txt = "Raw data - Record: "+str(record)+'\n'
+            dt.write(line_txt)
             update_flag = True
             tag_update = '1'
             values = tuple([int(record[3]),tag_update,call_check[0]]) ## set
@@ -201,6 +211,7 @@ def get_count(self,state):
     db_connection.commit()
     db_connection.close()
     if debug_analyze:
+        dt.write("Total records checked into database: "+str(record_count)+'.\n')
         dt.close()
             
         
