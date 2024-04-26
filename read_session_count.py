@@ -7,10 +7,10 @@ from datetime import date
 import requests
 from bs4 import BeautifulSoup
 
-debug_analyze = False  # Is set to False in production. Is set to True for development.
+debug_analyze = True  # Is set to False in production. Is set to True for development.
 
 def get_count(self,state):
-    reject = ['input','Location','select','Sort','option']
+    reject = ['input','Location','select','Sort','option','<th>']
     
     ## This function checks each line of data against the database
     ## either it inserts a new record, or it updates an existing record
@@ -32,9 +32,12 @@ def get_count(self,state):
     ## Filter data from raw HTML
     soup = BeautifulSoup(html_text, 'html.parser')
     
-    find_all = soup.find_all(['td'])
+    find_all = soup.find_all(['tr'])
     
-    capture_flag = False
+    if debug_analyze:
+        with open("find_all-dump.txt","w") as fd:
+            fd.write(str(find_all))
+    
     temp_list = []
     t_index = 0
     initial_tag = '0' ## set initial update tag
@@ -43,7 +46,7 @@ def get_count(self,state):
     ##
     for line in find_all:
         if debug_analyze:
-            line_txt = "Line in find_all: "+str(line)+'\n'
+            line_txt = ">>> Line in find_all: "+str(line)+'\n'
             dt.write(line_txt)
             dt.flush()
         line_txt = str(line) ## reset to line only
@@ -55,47 +58,64 @@ def get_count(self,state):
                 if debug_analyze:
                     line_check = f"check = {check}: reject_flag = True\n"
                     dt.write(line_check)
+                    temp_var = f"t_index = {t_index}\n"
+                    dt.write(temp_var)
+                    dt.flush()
                 reject_flag = True
+                temp_list = []
+                t_index = 0
+                
         if reject_flag: ## loop back for another line of text
             if debug_analyze:
                 dt.write("Reject_flag is set. Loop back.\n")
             continue
+        
         if debug_analyze:
             temp_var = f"t_index = {t_index}\n"
             dt.write(temp_var)
             dt.flush()
+        
         ## Looking for text containing the callsign and name of VE
-        if line_txt[:4] == "<td>" and "</b>" in line_txt and line_txt[len(line_txt)-5:] == "</td>" and t_index == 0:
-            output = line_txt[7:-5].replace('</b>','')
-            capture_flag = True
-            temp_list.append(output)
+        # Parse the tr tag
+        if debug_analyze:
+            temp_var = "Parsing line_txt to remove tr tag.\n"
+            dt.write(temp_var)
+            dt.flush()
+        line_txt = line_txt[4:len(line_txt)-5]
+        if debug_analyze:
+            temp_txt = f"New line_txt: {line_txt}.\n"
+            dt.write(temp_txt)
+            dt.flush()
+        
+        line_list = line_txt.split('</td>')
+        
+        temp_list = []
+        if line_list[1] != '\n':
+            output = line_list[0][7:].replace('</b>','')
+            if output[:12] == 'alt"><td><b>':
+                output = output[12:]
+            temp_list.append(output) ## append callsign
+            output = line_list[1][4:]
+            temp_list.append(output) ## append county
+            output = line_list[2][4:]
+            temp_list.append(output) ## append accreditation date
+            output = line_list[3][4:]
+            temp_list.append(output) ## append session count
             if debug_analyze:
-                temp_txt = f"capture_flag is True, CS output is {output}.\n"
+                temp_txt = f">> output list is {temp_list}.\n"
                 dt.write(temp_txt)
                 dt.flush()
-            t_index += 1
-        ## Looking for additional information: county, accreditation and count
-        elif line_txt[:4] == "<td>" and line_txt[len(line_txt)-5:] == "</td>" and capture_flag and t_index <3:
-            output = line_txt[4:len(line_txt)-5]
-            temp_list.append(output)
-            if debug_analyze:
-                temp_txt = f"Additional information is {output}. Saving.\n"
-                dt.write(temp_txt)
-            t_index += 1
-        ## All data for the VE has been captured, reset some variables
-        elif t_index > 2:
-            output = line_txt[4:len(line_txt)-5]
-            temp_list.append(output)
-            capture_flag = False
-            t_index = 0
             result.append(temp_list)
-            if debug_analyze:
-                dt.write("\n\nCapture_flag is False. Finished and saving: "+str(temp_list)+" ....Next data\n\n")
-                dt.flush()
-            temp_list = []
-    ## Now result is a list of lists
+        
+ 
+    ## 'result' is a list of lists
     record_count = 0
     for record in result:
+        if debug_analyze:
+            output = str(record)
+            temp_txt = f"Captured data is {output}. Saving.\n"
+            dt.write(temp_txt)
+            dt.flush()
         record_count += 1 
         ## we now have a list 'record' with [call,county,accreditation date,count]
         ## check if callsign exist in current table
@@ -165,7 +185,7 @@ def get_count(self,state):
         else: ## record exists, do an update
             if debug_analyze:
                 line_txt = "Raw data - Record: "+str(record)+'\n'
-            dt.write(line_txt)
+                dt.write(line_txt)
             update_flag = True
             tag_update = '1'
             values = tuple([int(record[3]),tag_update,call_check[0]]) ## set

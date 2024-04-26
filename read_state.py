@@ -21,8 +21,12 @@ def read_state_file(self):
     file_list = os.listdir(gv.base_rpt_dir)
     target_file = os.path.join(gv.base_rpt_dir,gv.target_name)
     ## Check if we have any files to generate a report with
-    with open(target_file,'r') as fh:
-        test_contents = fh.read()
+    #print("target file: ",target_file)
+    try:
+        with open(target_file,'r') as fh:
+            test_contents = fh.read()
+    except Exception:
+        pass
     if not os.path.isfile(target_file):
         mb.showwarning("Missing file in REPORTS Directory!",gv.target_name + " is missing in REPORTS directory.")
         return
