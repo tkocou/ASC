@@ -162,10 +162,13 @@ def display_list(self):
 
    
 def sort_list_of_tuples(self,lt):
-    if self.total_sort: ## only do sort by county at the state level of report
-        self.sort_key.set('4') ## For total listing reports, force a sort by count
-    sort_data_key = int(self.sort_key.get())
-    lt.sort(key=lambda tup_var: tup_var[sort_data_key], reverse = self.sort_dir)
-    return lt
+    try:
+        if self.total_sort: ## only do sort by county at the state level of report
+            self.sort_key.set('4') ## For total listing reports, force a sort by count
+        sort_data_key = int(self.sort_key.get())
+        lt.sort(key=lambda tup_var: tup_var[sort_data_key], reverse = self.sort_dir)
+        return lt
+    except Exception:
+        mb.showerror("Error","Database has errors. Please reset the database and import again")
     
         
