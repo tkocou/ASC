@@ -83,3 +83,5 @@ V 1.5 06_Apr_2024; Fixed a defect in the filtering logic used to extract data (r
 V 1.5.1 25_Apr_2024; Fixed another defect in the filtering logic (read_sesion_data.py)
 
 V 1.5.2 26_Apr_2024; A re-write of the filtering code (read_session_data.py)
+
+V 1.5.3  27_Apr_2024; Added code to trap database errors in deatiled_top_100.py
