@@ -2,3 +2,4 @@ venv/
 *.txt
 *.pyc
 *.db
+venv
