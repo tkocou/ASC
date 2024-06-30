@@ -2,13 +2,14 @@
 
 ## program vars
 program = "Another Session Count for VEs"
-version = "1.5.3"
+version = "1.6"
 
 top_window_x = 1280
 top_window_y = 700
 platform_os = ""
 
 asc_dir = "ASC"
+basic_dir = ""
 first_pass = True
 
 report_dir = "REPORTS"

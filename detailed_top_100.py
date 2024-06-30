@@ -6,6 +6,7 @@ from tkinter import messagebox as mb
 import sqlite3
 import global_var as gv
 import os
+from operator import itemgetter
 
 
 def detailed_top_data(self):
@@ -68,17 +69,18 @@ def detailed_top_data(self):
     
     ##tmp_result = []
     if self.my_callsign == "NOCALL":
-        mb.showerror("Error","Callsign has not been set. Use Set Defaults in menu to fix.")
+        mb.showerror("Error","Callsign has not been set. Use 'Set Defaults' in menu to fix.")
         self.topwin.destroy()
     else:
         
-        ## Fetch all records from ARRL DB table
+        ## Fetch all records from ARRL DB table - list of tuples
         db_cursor.execute(sql_arrl_total)
         self.ve_arrl_listing = db_cursor.fetchall()
         
-        ## Again, fetch all records from GLAARG DB table
+        ## Again, fetch all records from GLAARG DB table - list of tuples
         db_cursor.execute(sql_glaarg_total)
         self.ve_glaarg_listing = db_cursor.fetchall()
+        
         
         db_connection.close()
         
@@ -100,39 +102,63 @@ def detailed_top_data(self):
         self.result_text2['yscrollcommand'] = self.text_scroll.set
         
     
-def display_list(self):    
+def display_list(self): 
+      
     #list_selection = self.select_detail.get()
     self.result_text2.delete(1.0,tk.END)
     
-    ## create a generic text file
+    ## create a capture text file
     capture_file = os.path.join(gv.base_rpt_dir,'top 100 listing.txt')
     try:
         os.remove(capture_file)
     except Exception:
         pass
-    ## open the text file results capture file
+    ## open and store the results further down
     tf = open(capture_file,'w')
     
     self.total_sort = True
+
     arrl_sorted_list = sort_list_of_tuples(self,self.ve_arrl_listing)
+    
     glaarg_sorted_list = sort_list_of_tuples(self,self.ve_glaarg_listing)
+    
+    sorted_list = os.path.join(gv.base_rpt_dir,'glaarg_sorted_result.txt')
+    
+    fd = open(sorted_list,'w')
+    
+    for item in glaarg_sorted_list:
+        text_item = list(item)
+        file_text = str(text_item)+'\n'
+        fd.write(file_text)
+    fd.close()
     
     self.result_text2.delete(1.0,tk.END)
     self.update_idletasks()
     text_line = 'ARRL Report\n'
     tf.write(text_line)
     self.result_text2.insert(tk.END,text_line+'\n')
-    index = 1
-    for line in arrl_sorted_list:
-        text_text = "Count:{}, Call:{}, County:{}, State:{}, Accredited:{}\n".format(line[4],line[1],line[2],line[5],line[3])
-        if index == 101:
+######################################################### ARRL ##################################
+    index = 1    
+    for line_tuple in arrl_sorted_list:
+        ## only the first 100
+        if index > 100:
             break
         
+        line = list(line_tuple)
+        text_text = "Count:{}, Call:{}, County:{}, State:{}, Accredited:{}\n".format(line[4],line[1],line[2],line[5],line[3])
+        
+        ## flag a line if it is your callsign
         if line[1][:len(self.my_callsign)] == self.my_callsign:
-            text_line = str(index)+'>>' + text_text
+            text_line = str(index)+'**' + text_text
         else:
             text_line = str(index)+': ' + text_text
-        tf.write(text_line)
+        ## columnize the start of the data
+        if index < 10:
+            t_line = ' '+text_line
+        elif index < 100:
+            t_line = ' '+text_line
+        
+        tf.write(t_line)
         self.result_text2.insert(tk.END,text_line)
         index += 1
     text_line = '\n'
@@ -141,34 +167,41 @@ def display_list(self):
     text_line = 'GLAARG Report\n'
     tf.write(text_line)
     self.result_text2.insert(tk.END,text_line+'\n')
+    ####################################### GLAARG ##########################
     index = 1
-    for line in glaarg_sorted_list:
-        text_text = "Count:{}, Call:{}, Name:{}, Helped:{}, Overseen:{}, New License:{}, Upgrades:{}\n".format(line[4],line[2],line[3],line[5],line[6],line[7],line[8])
-        if index == 101:
+    for line_tuple in glaarg_sorted_list:
+        
+        ## Only the first 100
+        if index > 100:
             break
+        
+        line = list(line_tuple)
+        text_text = "Count:{}, Call:{}, Name:{}, Helped:{}, Overseen:{}, New License:{}, Upgrades:{}\n".format(line[4],line[2],line[3],line[5],line[6],line[7],line[8])
+        
+        ## flag a line if it is your callsign
         if line[2] == self.my_callsign:
-            text_line = str(index)+'>>' + text_text
+            text_line = str(index)+'**' + text_text
         else:
             text_line = str(index)+': ' + text_text
-        tf.write(text_line)
+        ## columnize the start of the data
+        if index < 10:
+            text_line = ' '+text_line
+        elif index < 100:
+            text_line = ' '+text_line
+        
+        tf.write(t_line)
         self.result_text2.insert(tk.END,text_line)
         index += 1
     text_line = '\n'
-    self.result_text2.insert(tk.END,text_line+'\n')
-    text_text = "End of report\n"
     tf.write(text_line)
+    self.result_text2.insert(tk.END,text_line+'\n')
+    text_text = "\nEnd of report\n"
+    tf.write(text_text)
     self.result_text2.insert(tk.END,text_text)
     tf.close()
 
-   
-def sort_list_of_tuples(self,lt):
-    try:
-        if self.total_sort: ## only do sort by county at the state level of report
-            self.sort_key.set('4') ## For total listing reports, force a sort by count
-        sort_data_key = int(self.sort_key.get())
-        lt.sort(key=lambda tup_var: tup_var[sort_data_key], reverse = self.sort_dir)
-        return lt
-    except Exception:
-        mb.showerror("Error","Database has errors. Please reset the database and import again")
-    
+
+def sort_list_of_tuples(self,data):
+    data.sort(key=itemgetter(4),reverse=True)
+    return data
         

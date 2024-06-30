@@ -2,7 +2,7 @@ import os
 import base64
 import bz2
 import platform
-#import shutil
+import re
 
 import global_var as gv
 import icons_array as ia 
@@ -18,9 +18,13 @@ def set_environment():
     ### Some code to accomodate the development environment
     ### leaving this in should not affect the production version
 
-    basic_dir = os.getcwd()
-    project_dir = basic_dir[-8:]
-
+    gv.basic_dir = os.getcwd()
+    
+    if re.search(r"Projects",gv.basic_dir): ## we might be working in directory "Projects/ASC"
+        project_dir = "Projects"
+    else:
+        project_dir = ""
+        
     ## Is the program running in my development environment?
     ##
     ## Build correct path to working directory and save as a global
@@ -30,21 +34,18 @@ def set_environment():
     if gv.first_pass:
         if project_dir == "Projects":
             ## Build a path referencing the home dir
-            asc_dir = os.path.join(basic_dir,gv.asc_dir)
-            #project2_dir = os.path.join(asc_dir, gv.csv_store)
-            #gv.base_csv_dir = os.path.join(home_dir, project2_dir)
+            if gv.basic_dir[-3:] != 'ASC':
+                asc_dir = os.path.join(os.getcwd(),gv.asc_dir)
+            else:
+                asc_dir = gv.basic_dir
             project3_dir = os.path.join(asc_dir, gv.report_dir)
             gv.base_rpt_dir = os.path.join(home_dir, project3_dir)
-            #project4_dir = os.path.join(asc_dir, gv.jsn_store)
-            #gv.base_jsn_dir = os.path.join(home_dir, project4_dir)
+            
             ## while the program is running, set 'first_pass' to False
             gv.first_pass = False
-            
         elif project_dir != "Projects":
-            basic_dir = home_dir
+            gv.basic_dir = home_dir
             asc_dir = os.path.join(home_dir,gv.asc_dir)
-            #gv.base_csv_dir = os.path.join(asc_dir, gv.csv_store)
-            #gv.base_jsn_dir = os.path.join(asc_dir, gv.jsn_store)
             gv.base_rpt_dir = os.path.join(asc_dir, gv.report_dir)
             ## while the program is running, set 'first_pass' to False
             gv.first_pass = False
@@ -57,27 +58,21 @@ def set_environment():
         except Exception: ## directory already exists, do nothing
             pass
 
-        ## Create the CSV holding directory path
-        #try:
-        #    os.mkdir(gv.base_csv_dir)
-        #except: ## directory already exists, do nothing
-        #    pass
 
         try:
             os.mkdir(gv.base_rpt_dir)
         except Exception: ## directory already exists, do nothing
             pass
-        '''
-        for vec in gv.vec_list:
-            try:
-                os.mkdir(gv.base_jsn_dir+'_'+vec)
-            except: ## directory already exists, do nothing
-                pass
-    '''
-        make_launcher()
-        
+
+        make_launcher() 
+    
     ## return that path
+    if gv.basic_dir[-3:] == "ASC":
+        basic_dir = gv.basic_dir[:-4]
+        
     return basic_dir
+
+        
 
 def make_launcher():
     global asc_dir, home_dir, basic_dir
