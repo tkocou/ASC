@@ -11,8 +11,7 @@ def setup():
     ## get_environment() only sets up the path
     ## and returns it
     basic_dir = ut.set_environment()
-    txt = "basic dir: "+basic_dir+'\n'
-    log_it(txt)
+    
     ## Change to correct directory
     try:
         os.chdir(basic_dir)
