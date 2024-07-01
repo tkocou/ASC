@@ -2,12 +2,8 @@
 
 import os
 import sqlite3
-#from sqlite3 import traceback
-#import sys
 import ve_utilities as ut
 import global_var as gv
-#import tkinter as tk
-#from tkinter import ttk
 from tkinter import messagebox as mb
 
 def setup():
@@ -15,9 +11,15 @@ def setup():
     ## get_environment() only sets up the path
     ## and returns it
     basic_dir = ut.set_environment()
-    
+    txt = "basic dir: "+basic_dir+'\n'
+    log_it(txt)
     ## Change to correct directory
-    os.chdir(basic_dir)
+    try:
+        os.chdir(basic_dir)
+    except Exception:
+        txt = "basic dir: "+basic_dir+'\n'
+        log_it(txt)
+        os.abort()
     ## set the flag
     db_result_flag = True
     #glaarg_update = False
@@ -125,4 +127,13 @@ def setup():
     
     ## whether we were successful or not, return a flag
     return db_result_flag
+
+def log_it(text): ## a quick logging dump
+    
+    logging = os.path.join(gv.base_rpt_dir,"a_log.txt")
+    with open(logging,'a') as li:
+        ## make sure we are dealing with a string
+        if not text.isalpha():
+            text = str(text)
+        li.write(text)
 
