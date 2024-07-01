@@ -44,6 +44,7 @@ def set_environment():
             ## while the program is running, set 'first_pass' to False
             gv.first_pass = False
         elif project_dir != "Projects":
+            home_dir = os.path.expanduser('~')
             gv.basic_dir = home_dir
             asc_dir = os.path.join(home_dir,gv.asc_dir)
             gv.base_rpt_dir = os.path.join(asc_dir, gv.report_dir)
