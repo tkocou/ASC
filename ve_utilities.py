@@ -70,6 +70,8 @@ def set_environment():
     ## return that path
     if gv.basic_dir[-3:] == "ASC":
         basic_dir = gv.basic_dir[:-4]
+    else:
+        basic_dir = gv.basic_dir
         
     return basic_dir
 

@@ -17,8 +17,9 @@ def setup():
         os.chdir(basic_dir)
     except Exception:
         txt = "basic dir: "+basic_dir+'\n'
+        print(txt)
         log_it(txt)
-        os.abort()
+        #os.abort()
     ## set the flag
     db_result_flag = True
     #glaarg_update = False
