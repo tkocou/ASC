@@ -105,8 +105,8 @@ def get_count(self):
                     t_temp.append(name)
                     for x in range(4,9): ## finish appending numbers
                         t_temp.append(t_list[x][1:])
-                #txt = "cleaned up record: "+str(t_temp)+'\n\n'
-                #log_it(txt)
+                txt = "cleaned up record: "+str(t_temp)+'\n\n'
+                log_it(txt)
                 
                 ## t_list now holds a proper list structure
                 t_list = t_temp
@@ -190,7 +190,7 @@ def get_count(self):
                 text = "Updating database, VE is " + str(call_check[0])+ '.\n'
                 self.result_text.insert(tk.END,text)
                 self.result_text.yview(tk.END)
-            #db_connection.commit()
+            db_connection.commit()
             self.update_idletasks()
             
         else: ## record exists, do an update
