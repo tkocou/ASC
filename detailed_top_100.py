@@ -189,7 +189,7 @@ def display_list(self):
         elif index < 100:
             text_line = ' '+text_line
         
-        tf.write(t_line)
+        tf.write(text_line)
         self.result_text2.insert(tk.END,text_line)
         index += 1
     text_line = '\n'

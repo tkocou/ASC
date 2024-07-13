@@ -82,6 +82,22 @@ def make_launcher():
     
      ## Path to Desktop
     desktop_dir = os.path.join(home_dir,"Desktop")
+    
+    ## we are looking for the path to 'bash'
+    ## the os.system() function does not return expexted results
+    ## so a round-about method is used
+    file_to_cap = "tmp_file"
+    ## create a temporary file
+    with open(file_to_cap,"w") as x: 
+        pass
+    ## tell the os.system() to write it's result to the temporary file
+    cmd = "which bash > "+ file_to_cap
+    os.system(cmd)
+    ## read in the result and assign it to a variab;e
+    with open("tmp_file","r") as x:
+        shell_cmd = x.read()
+    ## remove the temporary file.
+    os.remove(file_to_cap)
 
     #file_dict={'licon':"database.svg",'wicon':"database.ico",'wdesk':"CVE-DB.lnk"}
     file_dict={'licon':"database.svg"}
@@ -95,20 +111,16 @@ def make_launcher():
         bin_data = bz2.decompress(decoded_data)
         with open(file_name,"wb") as f:
             f.write(bin_data)
-    
-    #if sys_platform == "Windows":
-    #    link_file = file_dict['wdesk']
-    #    launcher_file = os.path.join(asc_dir,link_file)
-    #    launcher_dest = os.path.join(desktop_dir,link_file)
-    #    if not os.path.exists(launcher_dest):
-    #        shutil.copy2(launcher_file,launcher_dest)
-    #       
+          
     if sys_platform  == "Linux":
         ## let's create a desktop launcher
             launcher = "ASC-DB.desktop"
             desktop_launcher_path = os.path.join(desktop_dir,launcher)
             ## get the path towhere js8msg2 is executing from
-            exec_path = os.path.join(home_dir,"bin/ASC-DB")
+            #exec_path = os.path.join(home_dir,"bin/ASC-DB")
+            exec_path = os.path.join(home_dir,"ASC/start.sh")
+            ## tell the launch to not display any printing from the start.sh
+            exec_cmd = shell_cmd+ " "+ exec_path + "> /dev/null"
             icon_picture_path = os.path.join(asc_dir,"database.svg")
             ## updating launcher internals
             with open(desktop_launcher_path, "w") as fh:
@@ -119,7 +131,8 @@ def make_launcher():
                 fh.write("Icon="+icon_picture_path+'\n')
                 fh.write("Icon[en_US]="+icon_picture_path+'\n')
                 fh.write("Name[en_US]=ASC-DB\n")
-                fh.write("Exec="+exec_path+'\n')
+                #fh.write("Exec="+exec_path+'\n')
+                fh.write("Exec="+exec_cmd+'\n')
                 fh.write("Comment[en_US]="+gv.program+"\n")
                 fh.write("Name=CVE-DB\n")
                 fh.write("Comment="+gv.program+"\n")
