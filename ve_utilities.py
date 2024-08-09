@@ -96,6 +96,7 @@ def make_launcher():
     ## read in the result and assign it to a variab;e
     with open("tmp_file","r") as x:
         shell_cmd = x.read()
+    shell_cmd.rstrip() ## last character is a '\n'; remove it
     ## remove the temporary file.
     os.remove(file_to_cap)
 
