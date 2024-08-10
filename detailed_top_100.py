@@ -170,7 +170,6 @@ def display_list(self):
     ####################################### GLAARG ##########################
     index = 1
     for line_tuple in glaarg_sorted_list:
-        print("type line_tuple: ",line_tuple)
         
         ## Only the first 100
         if index > 100:
