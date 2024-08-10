@@ -89,3 +89,5 @@ V 1.5.3  27_Apr_2024; Added code to trap database errors in detailed_top_100.py
 V 1.6 30_Jun_2024; A rewrite to use a virtual Python environment, Fixed a GLAARG report issue
 
 V1.6.1 12_Jul_2024; Fixed the read_session_count_glaarg.py file which had database insertion problems. Fixed a minor display issue in detailed_top_100.py
+
+V1.6.1.1 09_Aug_2024; Linux fix only! Reworked the desktop launcher coding.
