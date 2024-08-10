@@ -131,7 +131,7 @@ def make_launcher():
         ## get the path towhere js8msg2 is executing from
         exec_path = os.path.join(home_dir,"bin/ASC-DB")
         ## tell the launch to not display any printing from the start.sh
-        exec_cmd = shell_cmd+ " "+ exec_path + "> /dev/null"
+        #exec_cmd = shell_cmd+ " "+ exec_path + "> /dev/null"
         icon_picture_path = os.path.join(asc_dir,"database.svg")
         ## updating launcher internals
         with open(desktop_launcher_path, "w") as fh:
@@ -142,7 +142,8 @@ def make_launcher():
             fh.write("Icon="+icon_picture_path+'\n')
             fh.write("Icon[en_US]="+icon_picture_path+'\n')
             fh.write("Name[en_US]=ASC-DB\n")
-            fh.write("Exec="+exec_cmd+'\n')
+            fh.write("Exec="+exec_path+'\n')
+            #fh.write("Exec="+exec_cmd+'\n')
             fh.write("Comment[en_US]="+gv.program+"\n")
             fh.write("Name=CVE-DB\n")
             fh.write("Comment="+gv.program+"\n")
