@@ -119,6 +119,7 @@ def make_launcher():
         bin_chk = os.path.join(home_dir,"bin/ASC-DB")
         bin_dir = os.path.join(home_dir,"bin")
         source_file = os.path.join(home_dir,"ASC/start.sh")
+        print("source_file: ",source_file)
         if os.path.isfile(bin_chk): ## if executable script is there, remove and replace
             os.remove(bin_chk)
         shutil(source_file,bin_dir,"ASC-DB")
