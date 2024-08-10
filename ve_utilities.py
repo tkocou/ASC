@@ -4,6 +4,7 @@ import bz2
 import platform
 import re
 import shutil
+import stat
 
 import global_var as gv
 import icons_array as ia 
@@ -98,11 +99,10 @@ def make_launcher():
     with open("tmp_file","r") as x:
         s = x.read()
     shell_cmd = s.rstrip('\n') ## last character is a '\n'; remove it
-    #print("shell_cmd: ",list(shell_cmd))
     ## remove the temporary file.
     os.remove(file_to_cap)
 
-    #file_dict={'licon':"database.svg",'wicon':"database.ico",'wdesk':"CVE-DB.lnk"}
+    
     file_dict={'licon':"database.svg"}
     
     keys = file_dict.keys()
@@ -116,14 +116,15 @@ def make_launcher():
             f.write(bin_data)
           
     if sys_platform  == "Linux":
-        bin_chk = os.path.join(home_dir,"bin/ASC-DB")
         bin_dir = os.path.join(home_dir,"bin")
+        bin_chk = os.path.join(bin_dir,"ASC-DB")
+        bin_start = os.path.join(bin_dir,"start.sh")
         source_file = os.path.join(home_dir,"ASC/start.sh")
-        print("source_file: ",source_file)
         if os.path.isfile(bin_chk): ## if executable script is there, remove and replace
             os.remove(bin_chk)
-        shutil(source_file,bin_dir,"ASC-DB")
-        os.chmod(bin_chk,stat.S_IEXEC)
+        shutil.copy(source_file,bin_dir)
+        shutil.move(bin_start,bin_chk)
+        os.chmod(bin_chk,stat.S_IRWXU)
         ## let's create a desktop launcher
         launcher = "ASC-DB.desktop"
         desktop_launcher_path = os.path.join(desktop_dir,launcher)
@@ -141,7 +142,6 @@ def make_launcher():
             fh.write("Icon="+icon_picture_path+'\n')
             fh.write("Icon[en_US]="+icon_picture_path+'\n')
             fh.write("Name[en_US]=ASC-DB\n")
-            #fh.write("Exec="+exec_path+'\n')
             fh.write("Exec="+exec_cmd+'\n')
             fh.write("Comment[en_US]="+gv.program+"\n")
             fh.write("Name=CVE-DB\n")

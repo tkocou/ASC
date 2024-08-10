@@ -1,5 +1,5 @@
-asc_env
-asc_env/
+env
+env/
 *.txt
 *.pyc
 *.db
