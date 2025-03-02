@@ -109,8 +109,12 @@ fi
 echo "Installing requirements..."
 ## get the absolute path of the working directory
 SCRIPT_DIR=$( cd -- "$( dirname -- '${BASH_SOURCE[0]}' )" & > /dev/null && pwd )
+HOME=eval ~
+BS4=$HOME/ASC/beautifulsoup4-4.12.2-py3-none-any.whl
 ## Did we already download the file?
-if [ ! -f ./ASC/beautifulsoup4-4.12.2-py3-none-any.whl ] ; then
+if [ -f $BS4 ] ; then
+  echo "BS4 is present"
+else
   wget  https://files.pythonhosted.org/packages/57/f4/a69c20ee4f660081a7dedb1ac57f29be9378e04edfcb90c526b923d4bebc/beautifulsoup4-4.12.2-py3-none-any.whl 
 fi
 ## install other packages via pip
