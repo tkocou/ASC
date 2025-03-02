@@ -109,8 +109,9 @@ fi
 echo "Installing requirements..."
 ## get the absolute path of the working directory
 SCRIPT_DIR=$( cd -- "$( dirname -- '${BASH_SOURCE[0]}' )" & > /dev/null && pwd )
-HOME=eval ~
-BS4=$HOME/ASC/beautifulsoup4-4.12.2-py3-none-any.whl
+#HOME=eval ~
+#BS4=$HOME/ASC/beautifulsoup4-4.12.2-py3-none-any.whl
+BS4=$SCRIPT_DIR/ASC/beautifulsoup4-4.12.2-py3-none-any.whl
 ## Did we already download the file?
 if [ -f $BS4 ] ; then
   echo "BS4 is present"
